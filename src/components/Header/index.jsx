@@ -1,4 +1,6 @@
+import { PATH } from "@/config";
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -36,7 +38,7 @@ const Header = () => {
                 >
                   <img
                     className="mb-1 mr-1 inline-block"
-                    src="./img/flags/usa.svg"
+                    src="/img/flags/usa.svg"
                     alt="..."
                   />{" "}
                   United States
@@ -46,7 +48,7 @@ const Header = () => {
                   <a className="dropdown-item" href="#!">
                     <img
                       className="mb-1 mr-2"
-                      src="./img/flags/usa.svg"
+                      src="/img/flags/usa.svg"
                       alt="USA"
                     />
                     United States
@@ -54,7 +56,7 @@ const Header = () => {
                   <a className="dropdown-item" href="#!">
                     <img
                       className="mb-1 mr-2"
-                      src="./img/flags/canada.svg"
+                      src="/img/flags/canada.svg"
                       alt="Canada"
                     />
                     Canada
@@ -62,7 +64,7 @@ const Header = () => {
                   <a className="dropdown-item" href="#!">
                     <img
                       className="mb-1 mr-2"
-                      src="./img/flags/germany.svg"
+                      src="/img/flags/germany.svg"
                       alt="Germany"
                     />
                     Germany
@@ -114,17 +116,17 @@ const Header = () => {
             {/* Nav */}
             <ul className="nav navbar-nav mr-8">
               <li className="nav-item">
-                <a className="nav-link" href="./shipping-and-returns.html">
+                <a className="nav-link" href="/shipping-and-returns.html">
                   Quy định giao hàng
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="./faq.html">
+                <a className="nav-link" href="/faq.html">
                   Câu hỏi
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="./contact-us.html">
+                <a className="nav-link" href="/contact-us.html">
                   Liên hệ
                 </a>
               </li>
@@ -159,8 +161,8 @@ const Header = () => {
       <nav className="navbar navbar-expand-lg navbar-light bg-white">
         <div className="container">
           {/* Brand */}
-          <a className="navbar-brand" href="./index.html">
-            <img style={{ width: "50px" }} src="./img/logo.svg" />
+          <a className="navbar-brand" href="/index.html">
+            <img style={{ width: "50px" }} src="/img/logo.svg" />
             Shopper.
           </a>
           {/* Toggler */}
@@ -180,27 +182,27 @@ const Header = () => {
             {/* Nav */}
             <ul className="navbar-nav mx-auto">
               <li className="nav-item">
-                <a className="nav-link" href="./">
+                <a className="nav-link" href="/">
                   Trang chủ
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="./shop.html">
+                <Link className="nav-link" to={PATH.Product}>
                   Sản phẩm
-                </a>
+                </Link>
               </li>
               <li className="nav-item dropdown">
-                <a className="nav-link" href="./shop.html">
+                <a className="nav-link" href="/shop.html">
                   Laptop
                 </a>
               </li>
               <li className="nav-item dropdown">
-                <a className="nav-link" href="./shop.html">
+                <a className="nav-link" href="/shop.html">
                   Máy tính
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="./shop.html">
+                <a className="nav-link" href="/shop.html">
                   Sản phẩm khuyến mãi
                 </a>
               </li>
@@ -213,7 +215,7 @@ const Header = () => {
                 </a>
               </li>
               <li className="nav-item ml-lg-n4">
-                <a className="nav-link" href="./account-wishlist.html">
+                <a className="nav-link" href="/account-wishlist.html">
                   <i className="fe fe-heart" />
                 </a>
               </li>
@@ -229,7 +231,7 @@ const Header = () => {
                 </a>
               </li>
               <li className="nav-item ml-lg-n4">
-                <a className="nav-link" href="./auth.html">
+                <a className="nav-link" href="/auth.html">
                   <i className="fe fe-user" />
                 </a>
               </li>

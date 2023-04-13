@@ -1,17 +1,41 @@
-import ProductCard from "@/components/ProductCard";
+import Paginate from "@/components/Paginate";
+import ProductCard, { ProductCardLoading } from "@/components/ProductCard";
+import { PATH } from "@/config";
 import { useQuery } from "@/hooks/useQuery";
 import { productService } from "@/services/product";
+import { cn, slugify } from "@/utils";
+import { current } from "@reduxjs/toolkit";
+import { Skeleton } from "antd";
+import queryString from "query-string";
 import React from "react";
+import {
+  generatePath,
+  Link,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 const ProductPage = () => {
-  const { data, loading } = useQuery({
-    queryFn: () =>
-      productService.getProduct(
-        "?fields=name,real_price,price,categories,slug,id,images"
-      ),
+  const { id } = useParams();
+  const [search] = useSearchParams();
+  const currentPage = parseInt(search.get("page") || 1);
+
+  const qs = queryString.stringify({
+    page: currentPage,
+    fields:
+      "name,real_price,price,categories,slug,id,images,discount_rate,review_count,rating_average",
+    categories: id,
   });
-  console.log("data", data);
-  if (loading) return null;
+
+  const { data, loading } = useQuery({
+    queryKey: [qs],
+    keepPreviousData: true,
+    queryFn: ({ signal }) => productService.getProduct(`?${qs}`, signal),
+  });
+
+  const { data: categories, loading: categoriesLoading } = useQuery({
+    queryFn: () => productService.getCategories(),
+  });
   return (
     <section className="py-11">
       <div className="container">
@@ -32,75 +56,45 @@ const ProductPage = () => {
                   <div>
                     <div className="form-group">
                       <ul className="list-styled mb-0" id="productsNav">
-                        <li className="list-styled-item">
-                          <a className="list-styled-link " href="#">
-                            All Products
-                          </a>
-                        </li>
-                        <li className="list-styled-item">
-                          {/* Toggle */}
-                          <a
-                            className="list-styled-link font-bold"
-                            href="#blousesCollapse"
-                          >
-                            Blouses and Shirts
-                          </a>
-                        </li>
-                        <li className="list-styled-item">
-                          {/* Toggle */}
-                          <a className="list-styled-link" href="#coatsCollapse">
-                            Coats and Jackets
-                          </a>
-                        </li>
-                        <li className="list-styled-item">
-                          {/* Toggle */}
-                          <a
-                            className="list-styled-link"
-                            href="#dressesCollapse"
-                            aria-expanded="true"
-                          >
-                            Dresses
-                          </a>
-                        </li>
-                        <li className="list-styled-item">
-                          {/* Toggle */}
-                          <a
-                            className="list-styled-link"
-                            href="#hoodiesCollapse"
-                          >
-                            Hoodies and Sweats
-                          </a>
-                        </li>
-                        <li className="list-styled-item">
-                          {/* Toggle */}
-                          <a className="list-styled-link" href="#denimCollapse">
-                            Denim
-                          </a>
-                        </li>
-                        <li className="list-styled-item">
-                          {/* Toggle */}
-                          <a className="list-styled-link" href="#jeansCollapse">
-                            Jeans
-                          </a>
-                        </li>
-                        <li className="list-styled-item">
-                          {/* Toggle */}
-                          <a
-                            className="list-styled-link"
-                            href="#jumpersCollapse"
-                          >
-                            Jumpers and Cardigans
-                          </a>
-                        </li>
-                        <li className="list-styled-item">
-                          {/* Toggle */}
-                          <a
-                            className="list-styled-link"
-                            href="#legginsCollapse"
-                          >
-                            Leggings
-                          </a>
-                        </li>
+                        {categoriesLoading ? (
+                          Array.from(Array(10)).map((_, i) => (
+                            <li key={i} className="list-styled-item">
+                              {/* Toggle */}
+                              <a className="list-styled-link " href="#">
+                                <Skeleton height={24} />
+                              </a>
+                            </li>
+                          ))
+                        ) : (
+                          <>
+                            <li className="list-styled-item">
+                              <Link
+                                className={cn("list-styled-link ", {
+                                  "font-bold": !id,
+                                })}
+                                to={PATH.Product}
+                              >
+                                Tất cả sản phẩm
+                              </Link>
+                            </li>
+                            {categories.data.map((e) => (
+                              <li key={e.id} className="list-styled-item">
+                                {/* Toggle */}
+                                <Link
+                                  className={cn("list-styled-link", {
+                                    "font-bold": e.id === parseInt(id),
+                                  })}
+                                  to={generatePath(PATH.Category, {
+                                    slug: slugify(e.title),
+                                    id: e.id,
+                                  })}
+                                >
+                                  {e.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </>
+                        )}
                       </ul>
                     </div>
                   </div>
@@ -437,12 +431,10 @@ const ProductPage = () => {
             </form>
           </div>
           <div className="col-12 col-md-8 col-lg-9">
-            {/* Slider */}
-            <div
+            {/* <div
               className="flickity-page-dots-inner mb-9"
               data-flickity='{"pageDots": true}'
             >
-              {/* Item */}
               <div className="w-100">
                 <div
                   className="card bg-h-100 bg-left"
@@ -451,9 +443,7 @@ const ProductPage = () => {
                   <div className="row" style={{ minHeight: "400px" }}>
                     <div className="col-12 col-md-10 col-lg-8 col-xl-6 align-self-center">
                       <div className="card-body px-md-10 py-11">
-                        {/* Heading */}
                         <h4>2019 Summer Collection</h4>
-                        {/* Button */}
                         <a
                           className="btn btn-link px-0 text-body"
                           href="shop.html"
@@ -472,7 +462,6 @@ const ProductPage = () => {
                   </div>
                 </div>
               </div>
-              {/* Item */}
               <div className="w-100">
                 <div
                   className="card bg-cover"
@@ -484,18 +473,15 @@ const ProductPage = () => {
                   >
                     <div className="col-12 col-md-10 col-lg-8 col-xl-6">
                       <div className="card-body px-md-10 py-11">
-                        {/* Heading */}
                         <h4 className="mb-5">
                           Get -50% from Summer Collection
                         </h4>
-                        {/* Text */}
                         <p className="mb-7">
                           Appear, dry there darkness they're seas. <br />
                           <strong className="text-primary">
                             Use code 4GF5SD
                           </strong>
                         </p>
-                        {/* Button */}
                         <a className="btn btn-outline-dark" href="shop.html">
                           Shop Now <i className="fe fe-arrow-right ml-2" />
                         </a>
@@ -504,7 +490,6 @@ const ProductPage = () => {
                   </div>
                 </div>
               </div>
-              {/* Item */}
               <div className="w-100">
                 <div
                   className="card bg-cover"
@@ -516,23 +501,19 @@ const ProductPage = () => {
                   >
                     <div className="col-12">
                       <div className="card-body px-md-10 py-11 text-center text-white">
-                        {/* Preheading */}
                         <p className="text-uppercase">Enjoy an extra</p>
-                        {/* Heading */}
                         <h1 className="display-4 text-uppercase">50% off</h1>
-                        {/* Link */}
                         <a
                           className="link-underline text-reset"
                           href="shop.html"
                         >
-                          Shop Collection
                         </a>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
             {/* Header */}
             <div className="row align-items-center mb-7">
               <div className="col-12 col-md">
@@ -564,55 +545,14 @@ const ProductPage = () => {
             <h4 className="mb-5 text-2xl">Searching for `Clothing`</h4>
             {/* Products */}
             <div className="row">
-              {data.data.map((e) => (
-                <ProductCard key={e.id} {...e} />
-              ))}
+              {loading
+                ? Array.from(Array(15)).map((_, i) => (
+                    <ProductCardLoading key={i} />
+                  ))
+                : data.data.map((e) => <ProductCard key={e.id} {...e} />)}
             </div>
             {/* Pagination */}
-            <nav className="d-flex justify-content-center justify-content-md-end">
-              <ul className="pagination pagination-sm text-gray-400">
-                <li className="page-item">
-                  <a className="page-link page-link-arrow" href="#">
-                    <i className="fa fa-caret-left" />
-                  </a>
-                </li>
-                <li className="page-item active">
-                  <a className="page-link" href="#">
-                    1
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="page-link" href="#">
-                    2
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="page-link" href="#">
-                    3
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="page-link" href="#">
-                    4
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="page-link" href="#">
-                    5
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="page-link" href="#">
-                    6
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="page-link page-link-arrow" href="#">
-                    <i className="fa fa-caret-right" />
-                  </a>
-                </li>
-              </ul>
-            </nav>
+            <Paginate totalPage={data?.paginate.totalPage} />
           </div>
         </div>
       </div>
