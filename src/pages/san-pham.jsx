@@ -1,13 +1,15 @@
 import Paginate from "@/components/Paginate";
 import ProductCard, { ProductCardLoading } from "@/components/ProductCard";
 import { PATH } from "@/config";
+import { useCategory } from "@/hooks/useCategories";
+import { useDidUpdateEffect } from "@/hooks/useDidUpdateEffect";
 import { useQuery } from "@/hooks/useQuery";
+import { useSearch } from "@/hooks/useSearch";
 import { productService } from "@/services/product";
 import { cn, slugify } from "@/utils";
-import { current } from "@reduxjs/toolkit";
 import { Skeleton } from "antd";
 import queryString from "query-string";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   generatePath,
   Link,
@@ -17,14 +19,26 @@ import {
 
 const ProductPage = () => {
   const { id } = useParams();
-  const [search] = useSearchParams();
-  const currentPage = parseInt(search.get("page") || 1);
+  // const [search, setSearch] = useSearchParams();
+  const [search, setSearch] = useSearch({
+    page: 1,
+    sort: "newest",
+  });
+
+  const [minPrice, setMinPrice] = useState(search.minPrice);
+  const [maxPrice, setMaxPrice] = useState(search.maxPrice);
+
+  const sort = search.sort;
 
   const qs = queryString.stringify({
-    page: currentPage,
+    page: search.page,
     fields:
       "name,real_price,price,categories,slug,id,images,discount_rate,review_count,rating_average",
     categories: id,
+    name: search.search,
+    sort,
+    minPrice: search.minPrice,
+    maxPrice: search.maxPrice,
   });
 
   const { data, loading } = useQuery({
@@ -36,13 +50,25 @@ const ProductPage = () => {
   const { data: categories, loading: categoriesLoading } = useQuery({
     queryFn: () => productService.getCategories(),
   });
+  // useEffect(() => {
+  //   if (comDidMountRef.current) {
+  //     setMaxPrice("");
+  //     setMinPrice("");
+  //     return;
+  //   }
+  //   comDidMountRef.current = false;
+  // }, [id]);
+  useDidUpdateEffect(() => {
+    setMinPrice("");
+    setMaxPrice("");
+  }, [id]);
   return (
     <section className="py-11">
       <div className="container">
         <div className="row">
           <div className="col-12 col-md-4 col-lg-3">
             {/* Filters */}
-            <form className="mb-10 mb-md-0">
+            <div className="mb-10 mb-md-0">
               <ul className="nav nav-vertical" id="filterNav">
                 <li className="nav-item">
                   {/* Toggle */}
@@ -409,8 +435,10 @@ const ProductPage = () => {
                       <input
                         type="number"
                         className="form-control form-control-xs"
-                        placeholder="$10.00"
                         min={10}
+                        placeholder="10"
+                        value={minPrice}
+                        onChange={(ev) => setMinPrice(ev.target.value)}
                       />
                       {/* Divider */}
                       <div className="text-gray-350 mx-2">‒</div>
@@ -418,17 +446,27 @@ const ProductPage = () => {
                       <input
                         type="number"
                         className="form-control form-control-xs"
-                        placeholder="$350.00"
                         max={350}
+                        placeholder="350"
+                        value={maxPrice}
+                        onChange={(ev) => setMaxPrice(ev.target.value)}
                       />
                     </div>
-                    <button className="btn btn-outline-dark btn-block mt-5">
+                    <button
+                      onClick={() => {
+                        setSearch({
+                          minPrice,
+                          maxPrice,
+                        });
+                      }}
+                      className="btn btn-outline-dark btn-block mt-5"
+                    >
                       Apply
                     </button>
                   </div>
                 </li>
               </ul>
-            </form>
+            </div>
           </div>
           <div className="col-12 col-md-8 col-lg-9">
             {/* <div
@@ -532,17 +570,31 @@ const ProductPage = () => {
               <div className="col-12 col-md-auto flex gap-1 items-center whitespace-nowrap">
                 {/* Select */}
                 Sắp xếp theo:
-                <select className="custom-select custom-select-xs">
-                  <option>Mới nhất</option>
-                  <option>Giá giảm dần</option>
-                  <option>Giá tăng dần</option>
-                  <option>Giảm giá nhiều nhất</option>
-                  <option>Đánh giá cao nhất</option>
-                  <option>Mua nhiều nhất</option>
+                <select
+                  value={sort}
+                  onChange={(ev) =>
+                    setSearch({
+                      sort: ev.target.value,
+                      page: 1,
+                    })
+                  }
+                  className="custom-select custom-select-xs"
+                >
+                  <option value="">Mới nhất</option>
+                  <option value="real_price.desc">Giá giảm dần</option>
+                  <option value="real_price.asc">Giá tăng dần</option>
+                  <option value="discountrate.desc">Giảm giá nhiều nhất</option>
+                  <option value="rating_average.desc">Đánh giá cao nhất</option>
+                  <option value="top_sale">Mua nhiều nhất</option>
                 </select>
               </div>
             </div>
-            <h4 className="mb-5 text-2xl">Searching for `Clothing`</h4>
+            {search.search ? (
+              <h4 className="mb-5 text-2xl">Searching for `{search.search}`</h4>
+            ) : (
+              ""
+            )}
+
             {/* Products */}
             <div className="row">
               {loading
