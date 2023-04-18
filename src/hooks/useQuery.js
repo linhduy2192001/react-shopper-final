@@ -1,8 +1,8 @@
 import { localStorageCache, sessionStorageCache } from "@/utils/cache";
+import { delay } from "@/utils/delay";
 import { Anchor } from "antd";
 import { CanceledError } from "axios";
 import { useRef } from "react";
-import { useMemo } from "react";
 import { useEffect, useState } from "react";
 
 const _cache = {
@@ -19,6 +19,7 @@ export const useQuery = ({
   enabled = true,
   cacheTime,
   keepPreviousData = false,
+  limitDuration,
   storeDriver = "localStorage",
 } = {}) => {
   const dataRef = useRef({});
@@ -77,11 +78,15 @@ export const useQuery = ({
   const fetchData = async () => {
     controllerRef.current.abort();
     controllerRef.current = new AbortController();
+    const startTime = Date.now();
+
+    let res;
+    let error;
     try {
       setLoading(true);
       setStatus("pending");
 
-      let res = getDataOrPreviousData();
+      res = getDataOrPreviousData();
       // Kiểm tra cache xem có dữ liệu hay không
       if (!res) {
         res = queryFn({ signal: controllerRef.current.signal });
@@ -92,20 +97,33 @@ export const useQuery = ({
       if (res instanceof Promise) {
         res = await res;
       }
-      if (res) setStatus("success");
+    } catch (err) {
+      console.log("err", err);
+      error = err;
+    }
+    const endTime = Date.now();
+    if (limitDuration) {
+      let timeOut = endTime - startTime;
+      if (timeOut < limitDuration) {
+        await delay(limitDuration - timeOut);
+      }
+    }
+    if (res) {
+      setStatus("success");
       setData(res);
       setDataOrPreviousData(res);
       // update lại thời gian expired trong trường hợp cache đã tồn tại
 
       refetchRef.current = false;
       setLoading(false);
-    } catch (err) {
-      if (err instanceof CanceledError) {
-      } else {
-        setError(err);
-        setStatus("error");
-        setLoading(false);
-      }
+      return res;
+    }
+    if (error instanceof CanceledError) {
+    } else {
+      setError(err);
+      setStatus("error");
+      setLoading(false);
+      throw err;
     }
   };
   return {
@@ -116,7 +134,3 @@ export const useQuery = ({
     refetch: fetchData,
   };
 };
-
-const promise = new Promise((res, rej) => {
-  setTimeout(() => res(100), 1000);
-});

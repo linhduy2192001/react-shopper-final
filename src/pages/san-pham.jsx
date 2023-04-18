@@ -1,5 +1,6 @@
 import Paginate from "@/components/Paginate";
 import ProductCard, { ProductCardLoading } from "@/components/ProductCard";
+import Radio from "@/components/Radio";
 import { PATH } from "@/config";
 import { useCategory } from "@/hooks/useCategories";
 import { useDidUpdateEffect } from "@/hooks/useDidUpdateEffect";
@@ -39,6 +40,7 @@ const ProductPage = () => {
     sort,
     minPrice: search.minPrice,
     maxPrice: search.maxPrice,
+    filterRating: search.filterRating,
   });
 
   const { data, loading } = useQuery({
@@ -62,6 +64,7 @@ const ProductPage = () => {
     setMinPrice("");
     setMaxPrice("");
   }, [id]);
+
   return (
     <section className="py-11">
       <div className="container">
@@ -134,21 +137,21 @@ const ProductPage = () => {
                     Rating
                   </a>
                   {/* Collapse */}
-                  <div>
-                    <div
-                      className="form-group form-group-overflow mb-6"
-                      id="seasonGroup"
-                    >
-                      <div className="custom-control custom-radio mb-3">
-                        <input
-                          className="custom-control-input"
-                          type="radio"
-                          defaultChecked
-                        />
-                        <label
-                          className="custom-control-label flex items-center"
-                          htmlFor="seasonOne"
-                        >
+                  <Radio.Group
+                    defaultValue={search.filterRating}
+                    toggle
+                    onChange={(value) => {
+                      setSearch({
+                        filterRating: value,
+                      });
+                    }}
+                  >
+                    <div>
+                      <div
+                        className="form-group form-group-overflow mb-6"
+                        id="seasonGroup"
+                      >
+                        <Radio value="5">
                           <svg
                             stroke="currentColor"
                             fill="currentColor"
@@ -222,18 +225,8 @@ const ProductPage = () => {
                           <span className="text-small inline-block ml-2">
                             from 5 star
                           </span>
-                        </label>
-                      </div>
-                      <div className="custom-control custom-radio mb-3">
-                        <input
-                          className="custom-control-input"
-                          id="seasonTwo"
-                          type="radio"
-                        />
-                        <label
-                          className="custom-control-label flex items-center"
-                          htmlFor="seasonOne"
-                        >
+                        </Radio>
+                        <Radio value="4">
                           <svg
                             stroke="currentColor"
                             fill="currentColor"
@@ -312,20 +305,10 @@ const ProductPage = () => {
                             </g>
                           </svg>
                           <span className="text-small inline-block ml-2">
-                            from 4 star
+                            "from 4 star"
                           </span>
-                        </label>
-                      </div>
-                      <div className="custom-control custom-radio">
-                        <input
-                          className="custom-control-input"
-                          id="seasonThree"
-                          type="radio"
-                        />
-                        <label
-                          className="custom-control-label flex items-center"
-                          htmlFor="seasonOne"
-                        >
+                        </Radio>
+                        <Radio value="3">
                           <svg
                             stroke="currentColor"
                             fill="currentColor"
@@ -413,10 +396,10 @@ const ProductPage = () => {
                           <span className="text-small inline-block ml-2">
                             from 3 star
                           </span>
-                        </label>
+                        </Radio>
                       </div>
                     </div>
-                  </div>
+                  </Radio.Group>
                 </li>
                 <li className="nav-item">
                   {/* Toggle */}

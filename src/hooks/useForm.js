@@ -7,7 +7,7 @@ import { validate } from "../utils/validate";
  * @param {*} rules
  * @return register, values, errors, validate
  */
-export const useForm = (rules, initialValue = {}) => {
+export const useForm = (rules, { initialValue = {}, dependencies = {} }) => {
   const [values, setValues] = useState(initialValue);
   const [errors, setError] = useState({});
 
@@ -15,19 +15,31 @@ export const useForm = (rules, initialValue = {}) => {
     return {
       error: errors[name],
       value: values[name] || "",
-      onChange: (ev) => {
-        let _values = { ...values, [name]: ev.target.value };
+      onChange: (value) => {
+        let _values = { ...values, [name]: value };
+
+        const _errorObj = {};
+
         if (rules[name]) {
-          const error = validate(
+          _errorObj[name] = validate(
             {
               [name]: rules[name],
             },
             _values
-          );
-
-          setError((prev) => ({ ...prev, [name]: error[name] || "" }));
+          )[name];
         }
-        setValues((prev) => ({ ...prev, [name]: ev.target.value }));
+        if (dependencies[name]) {
+          for (let dependency of dependencies[name]) {
+            _errorObj[dependency] = validate(
+              {
+                [dependency]: rules[dependency],
+              },
+              _values
+            )[dependency];
+          }
+        }
+        setError((prev) => ({ ...prev, ..._errorObj }));
+        setValues((prev) => ({ ...prev, [name]: value }));
       },
     };
   };

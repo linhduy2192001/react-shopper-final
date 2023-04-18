@@ -3,6 +3,7 @@ import { useQuery } from "./useQuery";
 
 export const useCategories = () => {
   return useQuery({
+    queryKey: [""],
     queryFn: () => productService.getCategories(),
   });
 };
