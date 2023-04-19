@@ -75,7 +75,7 @@ export const useQuery = ({
       cache.set(cacheName, data, expired);
     }
   };
-  const fetchData = async () => {
+  const fetchData = async (...args) => {
     controllerRef.current.abort();
     controllerRef.current = new AbortController();
     const startTime = Date.now();
@@ -89,7 +89,7 @@ export const useQuery = ({
       res = getDataOrPreviousData();
       // Kiểm tra cache xem có dữ liệu hay không
       if (!res) {
-        res = queryFn({ signal: controllerRef.current.signal });
+        res = queryFn({ signal: controllerRef.current.signal, params: args });
         if (cacheName) {
           _asyncFunction[cacheName] = res;
         }
@@ -98,7 +98,6 @@ export const useQuery = ({
         res = await res;
       }
     } catch (err) {
-      console.log("err", err);
       error = err;
     }
     const endTime = Date.now();

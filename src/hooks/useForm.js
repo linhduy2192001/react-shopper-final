@@ -1,15 +1,22 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { validate } from "../utils/validate";
 
 /**
  *
  * @param {*} rules
- * @return register, values, errors, validate
+ * @return register, values, errors,
  */
-export const useForm = (rules, { initialValue = {}, dependencies = {} }) => {
+export const useForm = (
+  rules,
+  { initialValue = {}, dependencies = {} } = {}
+) => {
   const [values, setValues] = useState(initialValue);
   const [errors, setError] = useState({});
+
+  useEffect(() => {
+    setValues(initialValue);
+  }, [JSON.stringify(initialValue)]);
 
   const register = (name) => {
     return {
@@ -38,6 +45,7 @@ export const useForm = (rules, { initialValue = {}, dependencies = {} }) => {
             )[dependency];
           }
         }
+
         setError((prev) => ({ ...prev, ..._errorObj }));
         setValues((prev) => ({ ...prev, [name]: value }));
       },
@@ -58,6 +66,7 @@ export const useForm = (rules, { initialValue = {}, dependencies = {} }) => {
 
   return {
     values,
+    setValues,
     errors,
     register,
     validate: _validate,

@@ -1,6 +1,115 @@
+import Button from "@/components/Button";
+import Field from "@/components/Field";
+import { useAuth } from "@/hooks/useAuth";
+import { useForm } from "@/hooks/useForm";
+import { useQuery } from "@/hooks/useQuery";
+import { userService } from "@/services/user";
+import { logoutAction, setUserAction } from "@/stores/auth";
+import {
+  confirmPassword,
+  handleError,
+  minMax,
+  regexp,
+  required,
+  validate,
+} from "@/utils";
+import { message } from "antd";
 import React from "react";
+import { useDispatch } from "react-redux";
+import _ from "lodash";
+import { object } from "@/utils/object";
+
+const rules = {
+  name: [required()],
+  phone: [required(), regexp("phone")],
+  currentPassword: [
+    (_, forms) => {
+      if (forms.newPassword) {
+        const errorObj = validate(
+          {
+            currentPassword: [required(), minMax(6, 32)],
+          },
+          forms
+        );
+        return errorObj.currentPassword;
+      }
+    },
+  ],
+  newPassword: [
+    (value, forms) => {
+      if (forms.currentPassword) {
+        if (forms.currentPassword === value)
+          return "Vui lòng không điền giống mật khẩu cũ";
+        const errorObj = validate(
+          {
+            currentPassword: [required(), minMax(6, 32)],
+          },
+          forms
+        );
+        return errorObj.newPassword;
+      }
+    },
+  ],
+
+  confirmPassword: [confirmPassword("newPassword")],
+};
 
 const Profile = () => {
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const userForm = useForm(rules, { initialValue: user });
+
+  const { loading, refetch: updateProfileService } = useQuery({
+    enabled: false,
+    queryFn: ({ params }) => userService.updateProfile(...params),
+  });
+
+  const { loading: changePasswordLoading, refetch: changePasswordService } =
+    useQuery({
+      enabled: false,
+      queryFn: ({ params }) => userService.changePassword(...params),
+    });
+
+  const onSubmit = async () => {
+    const checkOldData = object.isEqual(
+      user,
+      userForm.values,
+      "username",
+      "name",
+      "phone"
+    );
+    if (!userForm.values.newPassword && checkOldData) {
+      message.warning("Vui lòng nhập thông tin để thay đổi");
+      return;
+    }
+    if (userForm.validate()) {
+      if (!checkOldData) {
+        updateProfileService(userForm.values)
+          .then((res) => {
+            dispatch(setUserAction(res.data));
+            message.success("Cập nhật thông tin tài khoản thành công ");
+          })
+          .catch(handleError);
+      }
+
+      if (userForm.values.newPassword) {
+        changePasswordService({
+          currentPassword: userForm.values.currentPassword,
+          newPassword: userForm.values.newPassword,
+        })
+          .then((res) => {
+            userForm.setValues({
+              currentPassword: "",
+              newPassword: "",
+              confirmPassword: "",
+            });
+            message.success("Thay đổi mật khẩu thành công");
+          })
+          .catch(handleError);
+      }
+    }
+  };
+
   return (
     <section className="pt-7 pb-12">
       <div className="container">
@@ -48,6 +157,10 @@ const Profile = () => {
                 <a
                   className="list-group-item list-group-item-action dropright-toggle"
                   href="#!"
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    dispatch(logoutAction());
+                  }}
                 >
                   Đăng xuất
                 </a>
@@ -56,7 +169,7 @@ const Profile = () => {
           </div>
           <div className="col-12 col-md-9 col-lg-8 offset-lg-1">
             {/* Form */}
-            <form>
+            <div>
               <div className="row">
                 <div className="col-12">
                   <div className="profile-avatar">
@@ -70,82 +183,55 @@ const Profile = () => {
                 </div>
                 <div className="col-12">
                   {/* Email */}
-                  <div className="form-group">
-                    <label htmlFor="accountFirstName">Full Name *</label>
-                    <input
-                      className="form-control form-control-sm"
-                      id="accountFirstName"
-                      type="text"
-                      placeholder="Full Name *"
-                      defaultValue="Daniel"
-                      required
-                    />
-                  </div>
+                  <Field
+                    label="Full Name *"
+                    placeholder="Full Name *"
+                    {...userForm.register("name")}
+                  />
+                </div>
+                <div className="col-md-6">
+                  <Field
+                    label="Phone Number *"
+                    placeholder="Phone Number *"
+                    {...userForm.register("phone")}
+                  />
                 </div>
                 <div className="col-md-6">
                   {/* Email */}
-                  <div className="form-group">
-                    <label htmlFor="accountEmail">Phone Number *</label>
-                    <input
-                      className="form-control form-control-sm"
-                      id="accountEmail"
-                      type="email"
-                      placeholder="Phone Number *"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  {/* Email */}
-                  <div className="form-group">
-                    <label htmlFor="accountEmail">Email Address *</label>
-                    <input
-                      disabled
-                      className="form-control form-control-sm"
-                      id="accountEmail"
-                      type="email"
-                      placeholder="Email Address *"
-                      defaultValue="support@spacedev.com"
-                      required
-                    />
-                  </div>
+                  <Field
+                    label="Email *"
+                    placeholder="Email *"
+                    {...userForm.register("username")}
+                    disabled
+                  />
                 </div>
                 <div className="col-12 col-md-12">
                   {/* Password */}
-                  <div className="form-group">
-                    <label htmlFor="accountPassword">Current Password</label>
-                    <input
-                      className="form-control form-control-sm"
-                      id="accountPassword"
-                      type="password"
-                      placeholder="Current Password"
-                      required
-                    />
-                  </div>
+                  <Field
+                    type="password"
+                    label="Current Password"
+                    placeholder="Current Password"
+                    {...userForm.register("currentPassword")}
+                    autoComplete="new-password"
+                  />
                 </div>
                 <div className="col-12 col-md-6">
-                  <div className="form-group">
-                    <label htmlFor="AccountNewPassword">New Password</label>
-                    <input
-                      className="form-control form-control-sm"
-                      id="AccountNewPassword"
-                      type="password"
-                      placeholder="New Password"
-                      required
-                    />
-                  </div>
+                  <Field
+                    type="password"
+                    label="New Password"
+                    placeholder="New Password"
+                    {...userForm.register("newPassword")}
+                    autoComplete="new-password"
+                  />
                 </div>
                 <div className="col-12 col-md-6">
-                  <div className="form-group">
-                    <label htmlFor="AccountNewPassword">Conform Password</label>
-                    <input
-                      className="form-control form-control-sm"
-                      id="AccountNewPassword"
-                      type="password"
-                      placeholder="Conform Password"
-                      required
-                    />
-                  </div>
+                  <Field
+                    type="password"
+                    label="Confirm Password"
+                    placeholder="Confirm Password"
+                    {...userForm.register("confirmPassword")}
+                    autoComplete="new-password"
+                  />
                 </div>
                 <div className="col-12 col-lg-6">
                   <div className="form-group">
@@ -174,12 +260,12 @@ const Profile = () => {
                 </div>
                 <div className="col-12">
                   {/* Button */}
-                  <button className="btn btn-dark" type="submit">
+                  <Button onClick={onSubmit} loading={loading}>
                     Save Changes
-                  </button>
+                  </Button>
                 </div>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>

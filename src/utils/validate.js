@@ -1,21 +1,27 @@
 // rules = {
 //     name: [
-//         {required:true}
+//         { required: true }
 //     ],
-//     email:[
-//         {required:true ,message:'Xin vui lòng nhập email' },
-//         {regexp:'email',message:'Xin vui lòng nhập đúng địa chỉ email'}
+//     email: [
+//         { required: true },
+//         { regex: 'email' }
+//     ],
+//     phone: [
+//         { required: true },
+//         { regex: 'phone' }
 //     ]
 // }
 
-// form ={
-//     name:'Tran Minh Kha',
-//     email:'tranminhkha12cb4tqt@gmail.com'
+// forms = {
+//     name: 'Dang Thuyen Vuong',
+//     email: 'dangthuyenvuong@gmail.com',
+//     phone: '0949816596'
 // }
 
-// errorObj={
-//     email:'Xin vui lòng nhập đúng địa chỉ email'
+// errorObj = {
+//     name: 'Please fill in this field'
 // }
+
 const REGEXP = {
   email: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
   phone: /(84|0[3|5|7|8|9])+([0-9]{8})\b/,
@@ -23,34 +29,39 @@ const REGEXP = {
 };
 
 const ERROR_MESSAGE = {
-  required: "Xin vui lòng nhập thông tin",
-  regexp: "Xin vui lòng nhập đúng định dạng",
-  minMax: (min, max) => `Xin vui lòng nhập ${min}-${max} ký tự`,
-  confirm: (field) => `Xin vui lòng điền giống ${field} `,
+  required: "Please fill in this field",
+  regexp: "Field not like format",
+  minMax: (min, max) => `Xin vui lòng nhập từ ${min}-${max} ký tự`,
+  confirm: (field) => `Xin vui lòng điến giống ${field}`,
 };
 
 /**
  *
  * @param {*} rules
  * @param {*} form
- * @return plan error object
+ * @returns plan error object
  */
-
-export const validate = (rules, form) => {
+export const validate = (rules, forms) => {
   const errorObject = {};
-
   for (let name in rules) {
     for (let rule of rules[name]) {
-      if (rule.required) {
-        if (
-          (typeof form[name] === "boolean" && form[name]) ||
-          (typeof form[name] !== "boolean" && !form[name]?.trim())
-        ) {
-          errorObject[name] = rule.message || ERROR_MESSAGE.required;
+      if (typeof rule === "function") {
+        const err = rule(forms[name], forms);
+        if (err) {
+          errorObject[name] = err;
+          break;
         }
       }
 
-      if (rule.regexp && form[name]) {
+      if (rule.required) {
+        if (typeof forms[name] === "boolean" && !forms[name]) {
+        } else if (typeof forms[name] !== "boolean" && !forms[name]?.trim?.()) {
+          errorObject[name] = rule.message || ERROR_MESSAGE.required;
+          break;
+        }
+      }
+
+      if (rule.regexp && forms[name]) {
         let regexp = rule.regexp;
         if (regexp in REGEXP) {
           regexp = REGEXP[regexp];
@@ -58,19 +69,20 @@ export const validate = (rules, form) => {
           regexp = new RegExp();
         }
 
-        if (!regexp.test(form[name])) {
+        if (!regexp.test(forms[name])) {
           errorObject[name] = rule.message || ERROR_MESSAGE.regexp;
         }
       }
 
       if (rule.min || rule.max) {
-        if (form[name]?.length < rule.min || form[name]?.length > rule.max) {
+        if (forms[name]?.length < rule.min || forms[name]?.length > rule.max) {
           errorObject[name] =
             rule.message || ERROR_MESSAGE.minMax(rule.min, rule.max);
         }
       }
+
       if (rule.confirm) {
-        if (form[rule.confirm] !== form[name]) {
+        if (forms[rule.confirm] !== forms[name]) {
           errorObject[name] =
             rule.message || ERROR_MESSAGE.confirm(rule.confirm);
         }
@@ -82,8 +94,8 @@ export const validate = (rules, form) => {
 };
 
 export const required = (message) => ({
-  message,
   required: true,
+  message,
 });
 
 export const regexp = (pattern, message) => ({

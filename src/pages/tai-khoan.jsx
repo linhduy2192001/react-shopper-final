@@ -3,12 +3,25 @@ import Field from "@/components/Field";
 import { useBodyClass } from "@/hooks/useBodyClass";
 import React, { useEffect } from "react";
 import { useForm } from "@/hooks/useForm";
-import { regexp, required, confirmPassword, handleError } from "@/utils";
+import {
+  regexp,
+  required,
+  confirmPassword,
+  handleError,
+  copyToClipBoard,
+} from "@/utils";
 import { useQuery } from "@/hooks/useQuery";
 import { userService } from "@/services/user";
 import { message } from "antd";
+import { useAuth } from "@/hooks/useAuth";
+import { useDispatch } from "react-redux";
+import { loginAction, loginByCodeAction } from "@/stores/auth";
+import { useSearch } from "@/hooks/useSearch";
 
 const Account = () => {
+  const dispatch = useDispatch();
+  const [search] = useSearch();
+  const { loginLoading } = useAuth();
   useBodyClass("bg-light");
   const { loading, refetch: registerService } = useQuery({
     enabled: false,
@@ -18,6 +31,20 @@ const Account = () => {
         redirect: window.location.origin + window.location.pathname,
       }),
     limitDuration: 3000,
+  });
+  useEffect(() => {
+    if (search.code) {
+      dispatch(loginByCodeAction(search.code));
+    }
+  }, []);
+  // const { loading: loginLoading, refetch: loginService } = useQuery({
+  //   enabled: false,
+  //   queryFn: () => authService.login(formLogin.values),
+  //   limitDuration: 1000,
+  // });
+  const formLogin = useForm({
+    username: [required(), regexp("email")],
+    password: [required()],
   });
   const formRegister = useForm(
     {
@@ -43,6 +70,21 @@ const Account = () => {
       }
     }
   };
+
+  const onLogin = async () => {
+    if (formLogin.validate()) {
+      try {
+        await dispatch(loginAction(formLogin.values)).unwrap();
+        message.success("Login success");
+      } catch (err) {
+        handleError(err);
+      }
+    }
+  };
+  const _copyToClipBoard = (ev) => {
+    copyToClipBoard(ev.target.innerText);
+    message.info("Copy to clipboard");
+  };
   return (
     <section className="py-12">
       <div className="container">
@@ -54,15 +96,22 @@ const Account = () => {
                 {/* Heading */}
                 <h6 className="mb-7">Returning Customer</h6>
                 {/* Form */}
-                <form>
+                <div>
                   <div className="row">
                     <div className="col-12">
                       {/* Email */}
-                      <Field placeholder="Email Address" />
+                      <Field
+                        placeholder="Email Address"
+                        {...formLogin.register("username")}
+                      />
                     </div>
                     <div className="col-12">
                       {/* Password */}
-                      <Field placeholder="Password" type="password" />
+                      <Field
+                        placeholder="Password"
+                        type="password"
+                        {...formLogin.register("password")}
+                      />
                     </div>
                     <div className="col-12 col-md">
                       {/* Remember */}
@@ -96,19 +145,27 @@ const Account = () => {
                     </div>
                     <div className="col-12">
                       {/* Button */}
-                      <a
-                        href="./account-personal-info.html"
-                        className="btn btn-sm btn-dark"
-                        type="submit"
-                      >
+                      <Button onClick={onLogin} loading={loginLoading}>
                         Sign In
-                      </a>
+                      </Button>
                     </div>
                     <div className="col-12">
                       <p className="font-size-sm text-muted mt-5 mb-2 font-light">
                         Tài khoản demo:{" "}
                         <b className="text-black">
-                          demo@spacedev.com / Spacedev@123
+                          <span
+                            className="cursor-pointer underline"
+                            onClick={_copyToClipBoard}
+                          >
+                            demo@spacedev.com{" "}
+                          </span>
+                          /
+                          <span
+                            className="cursor-pointer underline"
+                            onClick={_copyToClipBoard}
+                          >
+                            Spacedev@123
+                          </span>
                         </b>
                       </p>
                       <p className="font-size-sm text-muted mt-5 mb-2 font-light text-justify">
@@ -127,7 +184,7 @@ const Account = () => {
                       </p>
                     </div>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
           </div>
