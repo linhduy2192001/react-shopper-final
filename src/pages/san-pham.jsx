@@ -76,7 +76,7 @@ const ProductPage = () => {
                 <li className="nav-item">
                   {/* Toggle */}
                   <a
-                    className="nav-link font-size-lg text-reset border-bottom mb-6"
+                    className="mb-6 nav-link font-size-lg text-reset border-bottom"
                     href="#categoryCollapse"
                   >
                     Category
@@ -84,7 +84,7 @@ const ProductPage = () => {
                   {/* Collapse */}
                   <div>
                     <div className="form-group">
-                      <ul className="list-styled mb-0" id="productsNav">
+                      <ul className="mb-0 list-styled" id="productsNav">
                         {categoriesLoading ? (
                           Array.from(Array(10)).map((_, i) => (
                             <li key={i} className="list-styled-item">
@@ -131,7 +131,7 @@ const ProductPage = () => {
                 <li className="nav-item">
                   {/* Toggle */}
                   <a
-                    className="nav-link font-size-lg text-reset border-bottom mb-6"
+                    className="mb-6 nav-link font-size-lg text-reset border-bottom"
                     href="#seasonCollapse"
                   >
                     Rating
@@ -148,7 +148,7 @@ const ProductPage = () => {
                   >
                     <div>
                       <div
-                        className="form-group form-group-overflow mb-6"
+                        className="mb-6 form-group form-group-overflow"
                         id="seasonGroup"
                       >
                         <Radio value="5">
@@ -222,7 +222,7 @@ const ProductPage = () => {
                           >
                             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                           </svg>
-                          <span className="text-small inline-block ml-2">
+                          <span className="inline-block ml-2 text-small">
                             from 5 star
                           </span>
                         </Radio>
@@ -304,7 +304,7 @@ const ProductPage = () => {
                               />
                             </g>
                           </svg>
-                          <span className="text-small inline-block ml-2">
+                          <span className="inline-block ml-2 text-small">
                             "from 4 star"
                           </span>
                         </Radio>
@@ -393,7 +393,7 @@ const ProductPage = () => {
                               />
                             </g>
                           </svg>
-                          <span className="text-small inline-block ml-2">
+                          <span className="inline-block ml-2 text-small">
                             from 3 star
                           </span>
                         </Radio>
@@ -404,7 +404,7 @@ const ProductPage = () => {
                 <li className="nav-item">
                   {/* Toggle */}
                   <a
-                    className="nav-link font-size-lg text-reset border-bottom mb-6"
+                    className="mb-6 nav-link font-size-lg text-reset border-bottom"
                     data-toggle="collapse"
                     href="#priceCollapse"
                   >
@@ -424,7 +424,7 @@ const ProductPage = () => {
                         onChange={(ev) => setMinPrice(ev.target.value)}
                       />
                       {/* Divider */}
-                      <div className="text-gray-350 mx-2">‒</div>
+                      <div className="mx-2 text-gray-350">‒</div>
                       {/* Input */}
                       <input
                         type="number"
@@ -442,7 +442,7 @@ const ProductPage = () => {
                           maxPrice,
                         });
                       }}
-                      className="btn btn-outline-dark btn-block mt-5"
+                      className="mt-5 btn btn-outline-dark btn-block"
                     >
                       Apply
                     </button>
@@ -458,7 +458,7 @@ const ProductPage = () => {
             >
               <div className="w-100">
                 <div
-                  className="card bg-h-100 bg-left"
+                  className="bg-left card bg-h-100"
                   style={{ backgroundImage: "url(./img/covers/cover-24.jpg)" }}
                 >
                   <div className="row" style={{ minHeight: "400px" }}>
@@ -466,16 +466,16 @@ const ProductPage = () => {
                       <div className="card-body px-md-10 py-11">
                         <h4>2019 Summer Collection</h4>
                         <a
-                          className="btn btn-link px-0 text-body"
+                          className="px-0 btn btn-link text-body"
                           href="shop.html"
                         >
                           View Collection{" "}
-                          <i className="fe fe-arrow-right ml-2" />
+                          <i className="ml-2 fe fe-arrow-right" />
                         </a>
                       </div>
                     </div>
                     <div
-                      className="col-12 col-md-2 col-lg-4 col-xl-6 d-none d-md-block bg-cover"
+                      className="bg-cover col-12 col-md-2 col-lg-4 col-xl-6 d-none d-md-block"
                       style={{
                         backgroundImage: "url(./img/covers/cover-16.jpg)",
                       }}
@@ -485,7 +485,7 @@ const ProductPage = () => {
               </div>
               <div className="w-100">
                 <div
-                  className="card bg-cover"
+                  className="bg-cover card"
                   style={{ backgroundImage: "url(./img/covers/cover-29.jpg)" }}
                 >
                   <div
@@ -504,7 +504,7 @@ const ProductPage = () => {
                           </strong>
                         </p>
                         <a className="btn btn-outline-dark" href="shop.html">
-                          Shop Now <i className="fe fe-arrow-right ml-2" />
+                          Shop Now <i className="ml-2 fe fe-arrow-right" />
                         </a>
                       </div>
                     </div>
@@ -513,7 +513,7 @@ const ProductPage = () => {
               </div>
               <div className="w-100">
                 <div
-                  className="card bg-cover"
+                  className="bg-cover card"
                   style={{ backgroundImage: "url(./img/covers/cover-30.jpg)" }}
                 >
                   <div
@@ -521,7 +521,7 @@ const ProductPage = () => {
                     style={{ minHeight: "400px" }}
                   >
                     <div className="col-12">
-                      <div className="card-body px-md-10 py-11 text-center text-white">
+                      <div className="text-center text-white card-body px-md-10 py-11">
                         <p className="text-uppercase">Enjoy an extra</p>
                         <h1 className="display-4 text-uppercase">50% off</h1>
                         <a
@@ -541,7 +541,7 @@ const ProductPage = () => {
                 {/* Heading */}
                 <h3 className="mb-1">Womens' Clothing</h3>
                 {/* Breadcrumb */}
-                <ol className="breadcrumb mb-md-0 font-size-xs text-gray-400">
+                <ol className="text-gray-400 breadcrumb mb-md-0 font-size-xs">
                   <li className="breadcrumb-item">
                     <a className="text-gray-400" href="index.html">
                       Home
@@ -550,7 +550,7 @@ const ProductPage = () => {
                   <li className="breadcrumb-item active">Women's Clothing</li>
                 </ol>
               </div>
-              <div className="col-12 col-md-auto flex gap-1 items-center whitespace-nowrap">
+              <div className="flex items-center gap-1 col-12 col-md-auto whitespace-nowrap">
                 {/* Select */}
                 Sắp xếp theo:
                 <select
@@ -584,7 +584,9 @@ const ProductPage = () => {
                 ? Array.from(Array(15)).map((_, i) => (
                     <ProductCardLoading key={i} />
                   ))
-                : data.data.map((e) => <ProductCard key={e.id} {...e} />)}
+                : data.data.map((e) => (
+                    <ProductCard showWishlist key={e.id} {...e} />
+                  ))}
             </div>
             {/* Pagination */}
             <Paginate totalPage={data?.paginate.totalPage} />

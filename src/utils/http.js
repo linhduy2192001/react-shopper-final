@@ -19,7 +19,6 @@ http.interceptors.response.use(
         error.response.status === 403 &&
         error.response.data.error_code === "TOKEN_EXPIRED"
       ) {
-        console.log("refresh token");
         const token = getToken();
         const res = await authService.refreshToken({
           refreshToken: token.refreshToken,

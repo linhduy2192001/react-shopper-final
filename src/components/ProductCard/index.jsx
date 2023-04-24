@@ -1,9 +1,19 @@
-import { useCategories, useCategory } from "@/hooks/useCategories";
-import { currency } from "@/utils";
+import { useCategory } from "@/hooks/useCategories";
+import { productService } from "@/services/product";
+import { currency, handleError } from "@/utils";
 import React from "react";
 import Skeleton from "../Skeleton";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { PATH } from "@/config";
+import { Popconfirm } from "../Popconfirm";
+import { message } from "antd";
 
 export default function ProductCard({
+  onRemoveWishlistSuccess,
+  showRemove,
+  showWishlist,
+  id,
   name,
   price,
   real_price,
@@ -16,8 +26,47 @@ export default function ProductCard({
 }) {
   const img1 = images?.[0].thumbnail_url;
   const img2 = images?.[1] ? images?.[1].thumbnail_url : img1;
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const category = useCategory(categories);
+
+  const onAddWishlist = async () => {
+    const key = `add-wishlist-${id}`;
+    try {
+      message.loading({
+        key,
+        content: `Đang thêm sản phẩm ${name} vào yêu thích`,
+        duration: 0,
+      });
+      await productService.addWishlist(id);
+      message.success({
+        key,
+        content: `Thêm sản phẩm ${name} vào yêu thích thành công`,
+      });
+    } catch (err) {
+      handleError(err, key);
+    }
+  };
+
+  const onRemoveWishlist = async () => {
+    const key = `remove-wishlist-${id}`;
+    try {
+      message.loading({
+        key,
+        content: `Đang xoá sản phẩm ${name} khỏi yêu thích`,
+        duration: 0,
+      });
+      await productService.removeWishlist(id);
+      message.success({
+        key,
+        content: `Xoá sản phẩm ${name} khỏi yêu thích thành công`,
+      });
+      onRemoveWishlistSuccess?.(id);
+    } catch (err) {
+      handleError(err, key);
+    }
+  };
   return (
     <div className="col-6 col-md-4">
       <div className="product-card card mb-7">
@@ -43,18 +92,43 @@ export default function ProductCard({
                 <i className="fe fe-shopping-cart" />
               </button>
             </span>
-            <span className="card-action">
-              <button
-                className="btn btn-xs btn-circle btn-white-primary"
-                data-toggle="button"
+
+            {showWishlist && (
+              <Popconfirm
+                disabled={!!user}
+                title="Thông báo"
+                description="Vui lòng đăng nhập trước khi đưa sản phẩm vào yêu thích"
+                onConfirm={() => navigate(PATH.Account)}
+                okText="Đăng nhập"
+                showCancel={false}
               >
-                <i className="fe fe-heart" />
-              </button>
-            </span>
+                <span className="card-action">
+                  <button
+                    onClick={user ? onAddWishlist : undefined}
+                    className="btn btn-xs btn-circle btn-white-primary"
+                    data-toggle="button"
+                  >
+                    <i className="fe fe-heart" />
+                  </button>
+                </span>
+              </Popconfirm>
+            )}
+
+            {showRemove && (
+              <span className="card-action">
+                <button
+                  onClick={onRemoveWishlist}
+                  className="btn btn-xs btn-circle btn-white-primary"
+                  data-toggle="button"
+                >
+                  <i className="fe fe-x" />
+                </button>
+              </span>
+            )}
           </div>
         </div>
         {/* Body */}
-        <div className="card-body px-0">
+        <div className="px-0 card-body">
           {/* Category */}
           <div className="card-product-category font-size-xs">
             {category && (
@@ -155,12 +229,12 @@ export default function ProductCard({
                 <span className="text-primary sale">
                   {currency(real_price)}
                 </span>
-                <span className="font-size-xs text-gray-350 text-decoration-line-through ml-1">
+                <span className="ml-1 font-size-xs text-gray-350 text-decoration-line-through">
                   {currency(price)}
                 </span>
               </>
             ) : (
-              <span className="font-size-xs text-gray-350 text-decoration-line-through ml-1">
+              <span className="ml-1 font-size-xs text-gray-350 text-decoration-line-through">
                 {real_price}
               </span>
             )}
@@ -181,28 +255,9 @@ export const ProductCardLoading = () => {
             <Skeleton height={300} />
           </a>
           {/* Actions */}
-          <div className="card-actions">
-            <span className="card-action"></span>
-            <span className="card-action">
-              <button
-                className="btn btn-xs btn-circle btn-white-primary"
-                data-toggle="button"
-              >
-                <i className="fe fe-shopping-cart" />
-              </button>
-            </span>
-            <span className="card-action">
-              <button
-                className="btn btn-xs btn-circle btn-white-primary"
-                data-toggle="button"
-              >
-                <i className="fe fe-heart" />
-              </button>
-            </span>
-          </div>
         </div>
         {/* Body */}
-        <div className="card-body px-0">
+        <div className="px-0 card-body">
           {/* Category */}
           <div className="card-product-category font-size-xs">
             <a className="text-muted" href="shop.html">

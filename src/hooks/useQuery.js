@@ -1,8 +1,8 @@
 import { localStorageCache, sessionStorageCache } from "@/utils/cache";
 import { delay } from "@/utils/delay";
-import { Anchor } from "antd";
 import { CanceledError } from "axios";
 import { useRef } from "react";
+import { useMemo } from "react";
 import { useEffect, useState } from "react";
 
 const _cache = {
@@ -10,7 +10,9 @@ const _cache = {
   sessionStorage: sessionStorageCache,
 };
 
-const _asyncFunction = {};
+const _asyncFunction = {
+  // key: Promise
+};
 
 export const useQuery = ({
   queryFn,
@@ -18,7 +20,9 @@ export const useQuery = ({
   dependencyList = [],
   enabled = true,
   cacheTime,
-  keepPreviousData = false,
+  onSuccess,
+  onError,
+  keepPrevousData = false,
   limitDuration,
   storeDriver = "localStorage",
 } = {}) => {
@@ -35,10 +39,11 @@ export const useQuery = ({
   const cacheName = Array.isArray(queryKey) ? queryKey[0] : queryKey;
   const controllerRef = useRef(new AbortController());
   // useEffect(() => {
-  //   if (typeof refetchRef.current === "boolean") {
-  //     refetchRef.current = true;
-  //   }
-  // }, dependencyList);
+  //     if (typeof refetchRef.current === 'boolean') {
+  //         refetchRef.current = true
+  //     }
+  // }, dependencyList)
+
   useEffect(() => {
     return () => {
       controllerRef.current.abort();
@@ -51,22 +56,24 @@ export const useQuery = ({
     }
   }, [enabled].concat(queryKey));
 
-  const getDataOrPreviousData = () => {
+  const getCacheDataOrPrivousData = () => {
     if (cacheName) {
-      if (keepPreviousData && dataRef.current[cacheName]) {
+      if (keepPrevousData && dataRef.current[cacheName]) {
         return dataRef.current[cacheName];
       }
       if (_asyncFunction[cacheName]) {
         return _asyncFunction[cacheName];
       }
+      // Kiểm tra cache xem có dữ liệu hay không
       return cache.get(queryKey);
     }
   };
 
-  const setDataOrPreviousData = (data) => {
-    if (keepPreviousData) {
+  const setCacheDataOrPrivousData = (data) => {
+    if (keepPrevousData) {
       dataRef.current[cacheName] = data;
     }
+
     if (cacheName && cacheTime) {
       let expired = cacheTime;
       if (cacheTime) {
@@ -75,6 +82,7 @@ export const useQuery = ({
       cache.set(cacheName, data, expired);
     }
   };
+
   const fetchData = async (...args) => {
     controllerRef.current.abort();
     controllerRef.current = new AbortController();
@@ -86,44 +94,58 @@ export const useQuery = ({
       setLoading(true);
       setStatus("pending");
 
-      res = getDataOrPreviousData();
-      // Kiểm tra cache xem có dữ liệu hay không
+      res = getCacheDataOrPrivousData();
+
       if (!res) {
         res = queryFn({ signal: controllerRef.current.signal, params: args });
         if (cacheName) {
           _asyncFunction[cacheName] = res;
         }
       }
+
       if (res instanceof Promise) {
         res = await res;
       }
     } catch (err) {
+      console.log(err);
       error = err;
     }
+
     const endTime = Date.now();
+
     if (limitDuration) {
-      let timeOut = endTime - startTime;
-      if (timeOut < limitDuration) {
-        await delay(limitDuration - timeOut);
+      let timeout = endTime - startTime;
+      if (timeout < limitDuration) {
+        await delay(limitDuration - timeout);
       }
     }
-    if (res) {
+
+    if (cacheName) delete _asyncFunction[cacheName];
+
+    if (res && !(res instanceof Promise)) {
       setStatus("success");
+      onSuccess?.(res);
       setData(res);
-      setDataOrPreviousData(res);
-      // update lại thời gian expired trong trường hợp cache đã tồn tại
+
+      setCacheDataOrPrivousData(res);
 
       refetchRef.current = false;
       setLoading(false);
       return res;
     }
+
     if (error instanceof CanceledError) {
     } else {
-      setError(err);
+      onError?.(error);
+      setError(error);
       setStatus("error");
       setLoading(false);
-      throw err;
+      throw error;
     }
+  };
+
+  const clearPreviousData = () => {
+    dataRef.current = {};
   };
   return {
     loading,
@@ -131,5 +153,6 @@ export const useQuery = ({
     data,
     status,
     refetch: fetchData,
+    clearPreviousData,
   };
 };

@@ -2,13 +2,15 @@ import React from "react";
 import { LoadingOutlined } from "@ant-design/icons";
 import { cn } from "@/utils";
 
-export default function Button({ children, loading, ...props }) {
+export default function Button({ outline, children, loading, ...props }) {
   return (
     <button
-      className={cn("btn btn-sm btn-dark flex items-center gap-2", {
-        "disabled pointer-events-none": loading,
-      })}
       {...props}
+      className={cn("btn btn-sm flex items-center gap-2", props.className, {
+        "disabled pointer-events-none": loading,
+        "btn-dark": !outline,
+        "btn-outline-dark": outline,
+      })}
     >
       {loading && <LoadingOutlined />}
       {children}

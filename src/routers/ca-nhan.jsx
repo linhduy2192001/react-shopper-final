@@ -1,14 +1,40 @@
 import { PATH } from "@/config";
+import { ProfileLayout } from "@/layouts/ProfileLayout";
 import Profile from "@/pages/ca-nhan";
 import Order from "@/pages/ca-nhan/don-hang";
+import { WishlistPage } from "@/pages/ca-nhan/san-pham-yeu-thich";
+import { AddressPage } from "@/pages/ca-nhan/so-dia-chi";
+import { ActionAddressPage } from "@/pages/ca-nhan/so-dia-chi/action";
 
 export const profile = [
   {
-    element: <Profile />,
-    index: true,
-  },
-  {
-    element: <Order />,
-    path: PATH.Profile.Order,
+    element: <ProfileLayout />,
+    children: [
+      {
+        element: <Profile />,
+        index: true,
+      },
+      {
+        element: <WishlistPage />,
+        path: PATH.Profile.Wistlist,
+      },
+      {
+        element: <AddressPage />,
+        path: PATH.Profile.Address,
+      },
+      {
+        element: <ActionAddressPage />,
+        path: PATH.Profile.NewAddress,
+      },
+      {
+        element: <ActionAddressPage />,
+        path: PATH.Profile.EditAddress,
+      },
+
+      {
+        element: <Order />,
+        path: PATH.Profile.Order,
+      },
+    ],
   },
 ];

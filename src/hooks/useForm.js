@@ -5,7 +5,7 @@ import { validate } from "../utils/validate";
 /**
  *
  * @param {*} rules
- * @return register, values, errors,
+ * @return register, values, errors, validate
  */
 export const useForm = (
   rules,

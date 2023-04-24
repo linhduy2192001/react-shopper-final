@@ -1,8 +1,10 @@
 import { message } from "antd";
 
-export const handleError = (error) => {
-  console.log(error);
-  if (error.response?.data?.message) {
-    message.error(error.response.data.message);
+export const handleError = (err, key) => {
+  if (err.response?.data?.message) {
+    message.error({
+      content: err?.response?.data?.message || err?.message,
+      key,
+    });
   }
 };

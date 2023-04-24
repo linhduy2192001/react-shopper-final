@@ -1,3 +1,4 @@
+import { cn } from "@/utils";
 import React, { createContext, useContext, useState } from "react";
 
 const Context = createContext({});
@@ -6,7 +7,7 @@ export default function Radio({ children, ...props }) {
   const { value, onChange } = useContext(Context);
   return (
     <div
-      className="custom-control custom-radio mb-3"
+      className="mb-3 custom-control custom-radio"
       onClick={() => onChange(props.value)}
     >
       <input
@@ -16,7 +17,7 @@ export default function Radio({ children, ...props }) {
         defaultChecked
       />
       <label
-        className="custom-control-label flex items-center"
+        className="flex items-center custom-control-label"
         htmlFor="seasonOne"
       >
         {children}
@@ -24,6 +25,21 @@ export default function Radio({ children, ...props }) {
     </div>
   );
 }
+
+Radio.Toggle = ({ children, ...props }) => {
+  const { value, onChange } = useContext(Context);
+
+  return (
+    <label
+      className={cn("btn btn-sm btn-outline-border ", {
+        active: props.value == value,
+      })}
+      onClick={() => onChange(props.value)}
+    >
+      <input type="radio" name="gender" defaultChecked /> {children}
+    </label>
+  );
+};
 
 Radio.Group = ({ children, defaultValue, toggle, ...props }) => {
   const [value, setValue] = useState(defaultValue);

@@ -20,7 +20,6 @@ const Paginate = ({ totalPage, name = "page" }) => {
     if (end > totalPage) {
       end = totalPage;
       start = end - 4;
-      a;
       if (start < 1) {
         start = 1;
       }
@@ -46,7 +45,7 @@ const Paginate = ({ totalPage, name = "page" }) => {
   if (totalPage <= 1) return null;
   return (
     <nav className="d-flex justify-content-center justify-content-md-end">
-      <ul className="pagination pagination-sm text-gray-400">
+      <ul className="text-gray-400 pagination pagination-sm">
         {currentPage > 1 && (
           <li className="page-item">
             <Link className="page-link page-link-arrow" to={preLink}>
