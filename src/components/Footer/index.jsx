@@ -4,14 +4,14 @@ const Footer = () => {
   return (
     <footer
       className="bg-dark bg-cover @@classList"
-      style={{ backgroundImage: "url(./img/patterns/pattern-2.svg)" }}
+      style={{ backgroundImage: "url(/img/patterns/pattern-2.svg)" }}
     >
-      <div className="py-12 border-bottom border-gray-700">
+      <div className="py-12 border-gray-700 border-bottom">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-12 col-md-10 col-lg-8 col-xl-6">
               {/* Heading */}
-              <h5 className="mb-7 text-center text-white">
+              <h5 className="text-center text-white mb-7">
                 Want style Ideas and Treats?
               </h5>
               {/* Form */}
@@ -68,16 +68,16 @@ const Footer = () => {
             </div>
             <div className="col-6 col-sm">
               {/* Heading */}
-              <h6 className="heading-xxs mb-4 text-white">Support</h6>
+              <h6 className="mb-4 text-white heading-xxs">Support</h6>
               {/* Links */}
               <ul className="list-unstyled mb-7 mb-sm-0">
                 <li>
-                  <a className="text-gray-300" href="./contact-us.html">
+                  <a className="text-gray-300" href="/contact-us.html">
                     Contact Us
                   </a>
                 </li>
                 <li>
-                  <a className="text-gray-300" href="./faq.html">
+                  <a className="text-gray-300" href="/faq.html">
                     FAQs
                   </a>
                 </li>
@@ -93,7 +93,7 @@ const Footer = () => {
                 <li>
                   <a
                     className="text-gray-300"
-                    href="./shipping-and-returns.html"
+                    href="/shipping-and-returns.html"
                   >
                     Shipping &amp; Returns
                   </a>
@@ -102,26 +102,26 @@ const Footer = () => {
             </div>
             <div className="col-6 col-sm">
               {/* Heading */}
-              <h6 className="heading-xxs mb-4 text-white">Shop</h6>
+              <h6 className="mb-4 text-white heading-xxs">Shop</h6>
               {/* Links */}
               <ul className="list-unstyled mb-7 mb-sm-0">
                 <li>
-                  <a className="text-gray-300" href="./shop.html">
+                  <a className="text-gray-300" href="/shop.html">
                     Men's Shopping
                   </a>
                 </li>
                 <li>
-                  <a className="text-gray-300" href="./shop.html">
+                  <a className="text-gray-300" href="/shop.html">
                     Women's Shopping
                   </a>
                 </li>
                 <li>
-                  <a className="text-gray-300" href="./shop.html">
+                  <a className="text-gray-300" href="/shop.html">
                     Kids' Shopping
                   </a>
                 </li>
                 <li>
-                  <a className="text-gray-300" href="./shop.html">
+                  <a className="text-gray-300" href="/shop.html">
                     Discounts
                   </a>
                 </li>
@@ -129,11 +129,11 @@ const Footer = () => {
             </div>
             <div className="col-6 col-sm">
               {/* Heading */}
-              <h6 className="heading-xxs mb-4 text-white">Company</h6>
+              <h6 className="mb-4 text-white heading-xxs">Company</h6>
               {/* Links */}
-              <ul className="list-unstyled mb-0">
+              <ul className="mb-0 list-unstyled">
                 <li>
-                  <a className="text-gray-300" href="./about.html">
+                  <a className="text-gray-300" href="/about.html">
                     Our Story
                   </a>
                 </li>
@@ -156,9 +156,9 @@ const Footer = () => {
             </div>
             <div className="col-6 col-sm">
               {/* Heading */}
-              <h6 className="heading-xxs mb-4 text-white">Contact</h6>
+              <h6 className="mb-4 text-white heading-xxs">Contact</h6>
               {/* Links */}
-              <ul className="list-unstyled mb-0">
+              <ul className="mb-0 list-unstyled">
                 <li>
                   <a className="text-gray-300" href="#!">
                     1-202-555-0105
@@ -192,32 +192,32 @@ const Footer = () => {
               {/* Payment methods */}
               <img
                 className="footer-payment"
-                src="./img/payment/mastercard.svg"
+                src="/img/payment/mastercard.svg"
                 alt="..."
               />
               <img
                 className="footer-payment"
-                src="./img/payment/visa.svg"
+                src="/img/payment/visa.svg"
                 alt="..."
               />
               <img
                 className="footer-payment"
-                src="./img/payment/amex.svg"
+                src="/img/payment/amex.svg"
                 alt="..."
               />
               <img
                 className="footer-payment"
-                src="./img/payment/paypal.svg"
+                src="/img/payment/paypal.svg"
                 alt="..."
               />
               <img
                 className="footer-payment"
-                src="./img/payment/maestro.svg"
+                src="/img/payment/maestro.svg"
                 alt="..."
               />
               <img
                 className="footer-payment"
-                src="./img/payment/klarna.svg"
+                src="/img/payment/klarna.svg"
                 alt="..."
               />
             </div>

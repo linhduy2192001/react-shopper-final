@@ -47,7 +47,7 @@ export const ProfileLayout = () => {
                 </NavLink>
                 <NavLink
                   className="list-group-item list-group-item-action dropright-toggle "
-                  to="account-payment.html"
+                  to={PATH.Profile.Payment}
                 >
                   Sổ thanh toán
                 </NavLink>

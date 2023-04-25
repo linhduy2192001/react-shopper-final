@@ -51,7 +51,7 @@ const AddressCard = withLoading(
           content: "Đang xoá địa chỉ ",
         });
         await userService.removeAddress(_id);
-        onChangeAddressDefault?.();
+        onDeleteAddress?.();
 
         message.success({
           key,
