@@ -9,6 +9,7 @@ import { PaymentCardStyle } from "./style";
 import { handleError } from "@/utils";
 import { userService } from "@/services/user";
 import { message } from "antd";
+import { useAction } from "@/hooks/useAction";
 
 export const PaymentCard = ({
   _id,
@@ -24,44 +25,57 @@ export const PaymentCard = ({
   const month = t[0];
   const year = t[1];
 
-  const _onDeletePayment = async () => {
-    const key = "delete-payment";
+  //   const _onDeletePayment = async () => {
+  //     const key = "delete-payment";
 
-    try {
-      message.loading({
-        key,
-        content: "Đang xoá sổ thanh toán ",
-      });
-      await userService.removePayment(_id);
-      onDeletePayment?.();
+  //     try {
+  //       message.loading({
+  //         key,
+  //         content: "Đang xoá sổ thanh toán ",
+  //       });
+  //       await userService.removePayment(_id);
+  //       onDeletePayment?.();
 
-      message.success({
-        key,
-        content: "Xoá sổ thanh toán thành công",
-      });
-    } catch (err) {
-      handleError(err, key);
-    }
-  };
+  //       message.success({
+  //         key,
+  //         content: "Xoá sổ thanh toán thành công",
+  //       });
+  //     } catch (err) {
+  //       handleError(err, key);
+  //     }
+  //   };
+  const _onChangePaymentDefault = useAction({
+    service: () => userService.editPayment(_id, { default: true }),
+    loadingMessage: "Thao tác đang được thực hiện",
+    successMessage: "Thay đổi sổ thanh toán mặc định thành công",
+    onSuccess: onChangePaymentDefault,
+  });
+  const _onDeletePayment = useAction({
+    service: () => userService.removePayment(_id),
+    loadingMessage: "Đang xoá sổ thanh toán ",
+    successMessage: "Xoá sổ thanh toán thành công",
+    onSuccess: onDeletePayment,
+    retry: false,
+  });
 
-  const _onChangePaymentDefault = async () => {
-    try {
-      const key = "change-payment-default";
-      message.loading({
-        key,
-        content: "Thao tác đang được thực hiện",
-      });
-      await userService.editPayment(_id, { default: true });
-      onChangePaymentDefault?.();
+  //   const _onChangePaymentDefault = async () => {
+  //     try {
+  //       const key = "change-payment-default";
+  //       message.loading({
+  //         key,
+  //         content: "Thao tác đang được thực hiện",
+  //       });
+  //       await userService.editPayment(_id, { default: true });
+  //       onChangePaymentDefault?.();
 
-      message.success({
-        key,
-        content: "Thay đổi sổ thanh toán mặc định thành công",
-      });
-    } catch (err) {
-      handleError(err);
-    }
-  };
+  //       message.success({
+  //         key,
+  //         content: "Thay đổi sổ thanh toán mặc định thành công",
+  //       });
+  //     } catch (err) {
+  //       handleError(err);
+  //     }
+  //   };
   return (
     <PaymentCardStyle className="col-12">
       <div className="mb-8 payment-card card card-lg bg-light">

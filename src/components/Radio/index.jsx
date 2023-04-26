@@ -1,5 +1,6 @@
+import { useDidUpdateEffect } from "@/hooks/useDidUpdateEffect";
 import { cn } from "@/utils";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const Context = createContext({});
 
@@ -41,8 +42,19 @@ Radio.Toggle = ({ children, ...props }) => {
   );
 };
 
-Radio.Group = ({ children, defaultValue, toggle, ...props }) => {
-  const [value, setValue] = useState(defaultValue);
+Radio.Group = ({
+  children,
+  value: valueProps,
+  defaultValue,
+  toggle,
+  ...props
+}) => {
+  const [value, setValue] = useState(valueProps || defaultValue);
+
+  useDidUpdateEffect(() => {
+    setValue(valueProps);
+  }, [valueProps]);
+
   const onChange = (_value) => {
     if (toggle && _value == value) {
       setValue();

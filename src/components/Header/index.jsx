@@ -1,10 +1,16 @@
 import { PATH } from "@/config";
+import { avatarDefault } from "@/config/assets";
+import { useAuth } from "@/hooks/useAuth";
+import { Dropdown } from "antd";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import SearchDrawer from "../SearchDrawer";
-
+import { logoutAction } from "@/stores/auth";
 const Header = () => {
+  const { user } = useAuth();
   const [openSearchDrawer, setOpenSearchDrawer] = useState(false);
+  const dispatch = useDispatch();
   return (
     <>
       <SearchDrawer
@@ -16,7 +22,7 @@ const Header = () => {
         <div className="container">
           {/* Promo */}
           <div className="mr-xl-8">
-            <i className="fe fe-truck mr-2" />{" "}
+            <i className="mr-2 fe fe-truck" />{" "}
             <span className="heading-xxxs">Vận chuyển toàn cầu</span>
           </div>
           {/* Toggler */}
@@ -34,7 +40,7 @@ const Header = () => {
           {/* Collapse */}
           <div className="navbar-collapse" id="topbarCollapse">
             {/* Nav */}
-            <ul className="nav nav-divided navbar-nav mr-auto">
+            <ul className="mr-auto nav nav-divided navbar-nav">
               <li className="nav-item dropdown">
                 {/* Toggle */}
                 <a
@@ -43,7 +49,7 @@ const Header = () => {
                   href="#"
                 >
                   <img
-                    className="mb-1 mr-1 inline-block"
+                    className="inline-block mb-1 mr-1"
                     src="/img/flags/usa.svg"
                     alt="..."
                   />{" "}
@@ -120,7 +126,7 @@ const Header = () => {
               </li>
             </ul>
             {/* Nav */}
-            <ul className="nav navbar-nav mr-8">
+            <ul className="mr-8 nav navbar-nav">
               <li className="nav-item">
                 <a className="nav-link" href="/shipping-and-returns.html">
                   Quy định giao hàng
@@ -138,7 +144,7 @@ const Header = () => {
               </li>
             </ul>
             {/* Nav */}
-            <ul className="nav navbar-nav flex-row">
+            <ul className="flex-row nav navbar-nav">
               <li className="nav-item">
                 <a className="nav-link text-gray-350" href="#!">
                   <i className="fab fa-facebook-f" />
@@ -164,7 +170,7 @@ const Header = () => {
         </div>
       </div>
       {/* NAVBAR */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-white">
+      <nav className="bg-white navbar navbar-expand-lg navbar-light">
         <div className="container">
           {/* Brand */}
           <a className="navbar-brand" href="/index.html">
@@ -186,7 +192,7 @@ const Header = () => {
           {/* Collapse */}
           <div className="navbar-collapse" id="navbarCollapse">
             {/* Nav */}
-            <ul className="navbar-nav mx-auto">
+            <ul className="mx-auto navbar-nav">
               <li className="nav-item">
                 <a className="nav-link" href="/">
                   Trang chủ
@@ -214,7 +220,7 @@ const Header = () => {
               </li>
             </ul>
             {/* Nav */}
-            <ul className="navbar-nav flex-row">
+            <ul className="flex-row navbar-nav">
               <li className="nav-item">
                 <a
                   className="nav-link"
@@ -244,11 +250,50 @@ const Header = () => {
                   </span>
                 </a>
               </li>
-              <li className="nav-item ml-lg-n4">
-                <Link className="nav-link" to={PATH.Account}>
-                  <i className="fe fe-user" />
-                </Link>
-              </li>
+              {user ? (
+                <Dropdown
+                  arrow
+                  placement="bottomRight"
+                  menu={{
+                    items: [
+                      {
+                        key: 1,
+                        label: (
+                          <Link to={PATH.Profile.Order}>Đơn hành của tôi</Link>
+                        ),
+                      },
+                      {
+                        key: 2,
+                        label: (
+                          <Link to={PATH.Profile.index}>
+                            Thông tin tài khoản
+                          </Link>
+                        ),
+                      },
+                      {
+                        key: 3,
+                        label: "Đăng xuất ",
+                        onClick: () => dispatch(logoutAction()),
+                      },
+                    ],
+                  }}
+                >
+                  <li class="nav-item ml-lg-n4">
+                    <Link
+                      class="header-avatar nav-link"
+                      to={PATH.Profile.index}
+                    >
+                      <img src={user?.avatar || avatarDefault} />
+                    </Link>
+                  </li>
+                </Dropdown>
+              ) : (
+                <li className="nav-item ml-lg-n4">
+                  <Link className="nav-link" to={PATH.Account}>
+                    <i className="fe fe-user" />
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>

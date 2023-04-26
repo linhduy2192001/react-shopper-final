@@ -1,6 +1,6 @@
 import Paginate from "@/components/Paginate";
 import { Portal } from "@/components/Portal";
-import ProductCard, { ProductCardLoading } from "@/components/ProductCard";
+import { ListProductCard } from "@/components/ProductCard";
 import { PROFILE_TITLE_ID } from "@/config";
 import { useQuery } from "@/hooks/useQuery";
 import { useSearch } from "@/hooks/useSearch";
@@ -21,11 +21,11 @@ export const WishlistPage = () => {
     loading,
     data,
     refetch: fetchWishlist,
-    clearPreviosData,
+    clearPreviousData,
   } = useQuery({
     queryKey: [qs],
     queryFn: () => productService.getWishlist(`?${qs}`),
-    keepPreviousData: true,
+    keepPrevousData: true,
   });
 
   return (
@@ -33,19 +33,16 @@ export const WishlistPage = () => {
       <Portal selector={PROFILE_TITLE_ID}>Sản phẩm yêu thích</Portal>
       <div>
         <div className="row">
-          {loading
-            ? Array.from(Array(6)).map((_, i) => <ProductCardLoading key={i} />)
-            : data.data.map((e) => (
-                <ProductCard
-                  onRemoveWishlistSuccess={() => {
-                    clearPreviosData();
-                    fetchWishlist();
-                  }}
-                  showRemove
-                  key={e.id}
-                  {...e}
-                />
-              ))}
+          <ListProductCard
+            loadingCount={6}
+            loading={loading}
+            data={data?.data}
+            showRemove
+            onRemoveWishlistSuccess={() => {
+              clearPreviousData();
+              fetchWishlist();
+            }}
+          />
         </div>
         <Paginate totalPage={data?.paginate?.totalPage} />
       </div>

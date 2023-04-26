@@ -1,8 +1,9 @@
+import { Breadcrumb } from "@/components/Breadcrumb";
 import Paginate from "@/components/Paginate";
-import ProductCard, { ProductCardLoading } from "@/components/ProductCard";
+import { ListProductCard } from "@/components/ProductCard";
 import Radio from "@/components/Radio";
 import { PATH } from "@/config";
-import { useCategory } from "@/hooks/useCategories";
+import { useCategories, useCategory } from "@/hooks/useCategories";
 import { useDidUpdateEffect } from "@/hooks/useDidUpdateEffect";
 import { useQuery } from "@/hooks/useQuery";
 import { useSearch } from "@/hooks/useSearch";
@@ -10,17 +11,11 @@ import { productService } from "@/services/product";
 import { cn, slugify } from "@/utils";
 import { Skeleton } from "antd";
 import queryString from "query-string";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  generatePath,
-  Link,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import React, { useState } from "react";
+import { generatePath, Link, useParams } from "react-router-dom";
 
 const ProductPage = () => {
   const { id } = useParams();
-  // const [search, setSearch] = useSearchParams();
   const [search, setSearch] = useSearch({
     page: 1,
     sort: "newest",
@@ -37,7 +32,7 @@ const ProductPage = () => {
       "name,real_price,price,categories,slug,id,images,discount_rate,review_count,rating_average",
     categories: id,
     name: search.search,
-    sort,
+    sort: sort,
     minPrice: search.minPrice,
     maxPrice: search.maxPrice,
     filterRating: search.filterRating,
@@ -45,13 +40,13 @@ const ProductPage = () => {
 
   const { data, loading } = useQuery({
     queryKey: [qs],
-    keepPreviousData: true,
+    keepPrevousData: true,
     queryFn: ({ signal }) => productService.getProduct(`?${qs}`, signal),
   });
 
-  const { data: categories, loading: categoriesLoading } = useQuery({
-    queryFn: () => productService.getCategories(),
-  });
+  const { data: categories, loading: categoriesLoading } = useCategories();
+  const category = useCategory(parseInt(id));
+  console.log("category", category);
   // useEffect(() => {
   //   if (comDidMountRef.current) {
   //     setMaxPrice("");
@@ -138,7 +133,7 @@ const ProductPage = () => {
                   </a>
                   {/* Collapse */}
                   <Radio.Group
-                    defaultValue={search.filterRating}
+                    value={search.filterRating}
                     toggle
                     onChange={(value) => {
                       setSearch({
@@ -539,16 +534,24 @@ const ProductPage = () => {
             <div className="row align-items-center mb-7">
               <div className="col-12 col-md">
                 {/* Heading */}
-                <h3 className="mb-1">Womens' Clothing</h3>
+                <h3 className="mb-1">
+                  {category ? category.title : "Tất cả sản phẩm"}
+                </h3>
                 {/* Breadcrumb */}
-                <ol className="text-gray-400 breadcrumb mb-md-0 font-size-xs">
+                {/* <ol className="text-gray-400 breadcrumb mb-md-0 font-size-xs">
                   <li className="breadcrumb-item">
                     <a className="text-gray-400" href="index.html">
                       Home
                     </a>
                   </li>
                   <li className="breadcrumb-item active">Women's Clothing</li>
-                </ol>
+                </ol> */}
+                <Breadcrumb>
+                  <Breadcrumb.Item to={PATH.Home}>Home</Breadcrumb.Item>
+                  <Breadcrumb.Item>
+                    {category ? category.title : "Tất cả sản phẩm"}
+                  </Breadcrumb.Item>
+                </Breadcrumb>
               </div>
               <div className="flex items-center gap-1 col-12 col-md-auto whitespace-nowrap">
                 {/* Select */}
@@ -572,24 +575,19 @@ const ProductPage = () => {
                 </select>
               </div>
             </div>
-            {search.search ? (
+            {search.search && (
               <h4 className="mb-5 text-2xl">Searching for `{search.search}`</h4>
-            ) : (
-              ""
             )}
-
-            {/* Products */}
             <div className="row">
-              {loading
-                ? Array.from(Array(15)).map((_, i) => (
-                    <ProductCardLoading key={i} />
-                  ))
-                : data.data.map((e) => (
-                    <ProductCard showWishlist key={e.id} {...e} />
-                  ))}
+              <ListProductCard
+                loadingCount={15}
+                loading={loading}
+                data={data?.data}
+                showWishlist
+              />
             </div>
             {/* Pagination */}
-            <Paginate totalPage={data?.paginate.totalPage} />
+            <Paginate totalPage={data?.paginate?.totalPage} />
           </div>
         </div>
       </div>

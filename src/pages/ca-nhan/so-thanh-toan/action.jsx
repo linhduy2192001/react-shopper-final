@@ -9,6 +9,7 @@ import { useForm } from "@/hooks/useForm";
 import { useQuery } from "@/hooks/useQuery";
 import { userService } from "@/services/user";
 import { handleError, required } from "@/utils";
+import { object } from "@/utils/object";
 import { message, Spin } from "antd";
 import moment from "moment";
 import React, { useRef, useState } from "react";
@@ -62,6 +63,11 @@ export const ActionPaymentPage = () => {
   const onSubmit = async () => {
     try {
       if (form.validate()) {
+        if (id && object.isEqual(form.values, paymentDetail.data)) {
+          return message.warning(
+            "Vui lòng thay đổi dữ liệu trước khi bấm cập nhật"
+          );
+        }
         await actionService({
           ...form.values,
           type: typeRef.current,

@@ -9,6 +9,7 @@ import { useQuery } from "@/hooks/useQuery";
 import { userService } from "@/services/user";
 import { message, Spin } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
+import { object } from "@/utils/object";
 
 const rules = {
   fullName: [required()],
@@ -50,6 +51,11 @@ export const ActionAddressPage = () => {
   const onSubmit = async () => {
     try {
       if (form.validate()) {
+        if (id && object.isEqual(form.values, addressDetail.data)) {
+          return message.warning(
+            "Vui lòng thay đổi dữ liệu trước khi bấm cập nhật"
+          );
+        }
         await actionService(form.values);
         message.success(
           id ? "Cập nhật địa chỉ thành công" : "Thêm sổ địa chỉ thành công!"
