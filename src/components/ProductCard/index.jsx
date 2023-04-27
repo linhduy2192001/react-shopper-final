@@ -11,6 +11,8 @@ import { message } from "antd";
 import { withListLoading } from "@/utils/withListLoading";
 import { useAction } from "@/hooks/useAction";
 import { Rating } from "../Rating";
+import { useDispatch } from "react-redux";
+import { addCartItemAction } from "@/stores/cart";
 
 export default function ProductCard({
   onRemoveWishlistSuccess,
@@ -31,6 +33,7 @@ export default function ProductCard({
   const img2 = images?.[1] ? images?.[1].thumbnail_url : img1;
   const { user } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const category = useCategory(categories);
   const onAddWishlist = useAction({
@@ -88,6 +91,18 @@ export default function ProductCard({
   //     handleError(err, key);
   //   }
   // };
+  const onAddCartItem = () => {
+    if (user) {
+      dispatch(
+        addCartItemAction({
+          productId: id,
+          quantity: 1,
+        })
+      );
+    } else {
+      navigate(PATH.Account);
+    }
+  };
   return (
     <div className="col-6 col-md-4">
       <div className="product-card card mb-7">
@@ -107,6 +122,7 @@ export default function ProductCard({
             <span className="card-action"></span>
             <span className="card-action">
               <button
+                onClick={onAddCartItem}
                 className="btn btn-xs btn-circle btn-white-primary"
                 data-toggle="button"
               >
