@@ -46,7 +46,6 @@ const ProductPage = () => {
 
   const { data: categories, loading: categoriesLoading } = useCategories();
   const category = useCategory(parseInt(id));
-  console.log("category", category);
   // useEffect(() => {
   //   if (comDidMountRef.current) {
   //     setMaxPrice("");

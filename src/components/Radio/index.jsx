@@ -12,6 +12,7 @@ export default function Radio({ children, ...props }) {
       onClick={() => onChange(props.value)}
     >
       <input
+        readOnly
         checked={props.value == value}
         className="custom-control-input"
         type="radio"
@@ -37,7 +38,7 @@ Radio.Toggle = ({ children, ...props }) => {
       })}
       onClick={() => onChange(props.value)}
     >
-      <input type="radio" name="gender" defaultChecked /> {children}
+      <input type="radio" readOnly name="gender" defaultChecked /> {children}
     </label>
   );
 };

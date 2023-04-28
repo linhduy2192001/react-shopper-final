@@ -12,7 +12,8 @@ import { withListLoading } from "@/utils/withListLoading";
 import { useAction } from "@/hooks/useAction";
 import { Rating } from "../Rating";
 import { useDispatch } from "react-redux";
-import { addCartItemAction } from "@/stores/cart";
+import { updateCartItemAction } from "@/stores/cart";
+import { useCart } from "@/hooks/useCart";
 
 export default function ProductCard({
   onRemoveWishlistSuccess,
@@ -34,6 +35,7 @@ export default function ProductCard({
   const { user } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { cart } = useCart();
 
   const category = useCategory(categories);
   const onAddWishlist = useAction({
@@ -93,10 +95,14 @@ export default function ProductCard({
   // };
   const onAddCartItem = () => {
     if (user) {
+      const { listItems } = cart;
+      const product = listItems.find((e) => e.productId === id);
+      console.log("listItems", listItems);
       dispatch(
-        addCartItemAction({
+        updateCartItemAction({
           productId: id,
-          quantity: 1,
+          quantity: product ? product.quantity + 1 : 1,
+          showPopover: true,
         })
       );
     } else {

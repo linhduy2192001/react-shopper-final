@@ -284,7 +284,7 @@ const Header = () => {
                     data-toggle="modal"
                     href="#modalShoppingCart"
                   >
-                    <span data-cart-items={cart?.totalQuantity}>
+                    <span data-cart-items={cart?.totalQuantity || undefined}>
                       <i className="fe fe-shopping-cart" />
                     </span>
                   </a>
@@ -321,9 +321,9 @@ const Header = () => {
                     ],
                   }}
                 >
-                  <li class="nav-item ml-lg-n4">
+                  <li className="nav-item ml-lg-n4">
                     <Link
-                      class="header-avatar nav-link"
+                      className="header-avatar nav-link"
                       to={PATH.Profile.index}
                     >
                       <img src={user?.avatar || avatarDefault} />
