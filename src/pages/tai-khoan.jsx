@@ -74,7 +74,7 @@ const Account = () => {
   const onLogin = async () => {
     if (formLogin.validate()) {
       try {
-        await dispatch(loginAction(formLogin.values)).unwrap();
+        dispatch(loginAction(formLogin.values));
         message.success("Login success");
       } catch (err) {
         handleError(err);
@@ -91,7 +91,7 @@ const Account = () => {
         <div className="row">
           <div className="col-12 col-md-6">
             {/* Card */}
-            <div className="card card-lg mb-10 mb-md-0">
+            <div className="mb-10 card card-lg mb-md-0">
               <div className="card-body">
                 {/* Heading */}
                 <h6 className="mb-7">Returning Customer</h6>
@@ -150,25 +150,25 @@ const Account = () => {
                       </Button>
                     </div>
                     <div className="col-12">
-                      <p className="font-size-sm text-muted mt-5 mb-2 font-light">
+                      <p className="mt-5 mb-2 font-light font-size-sm text-muted">
                         Tài khoản demo:{" "}
                         <b className="text-black">
                           <span
-                            className="cursor-pointer underline"
+                            className="underline cursor-pointer"
                             onClick={_copyToClipBoard}
                           >
                             demo@spacedev.com{" "}
                           </span>
                           /
                           <span
-                            className="cursor-pointer underline"
+                            className="underline cursor-pointer"
                             onClick={_copyToClipBoard}
                           >
                             Spacedev@123
                           </span>
                         </b>
                       </p>
-                      <p className="font-size-sm text-muted mt-5 mb-2 font-light text-justify">
+                      <p className="mt-5 mb-2 font-light text-justify font-size-sm text-muted">
                         Chúng tôi cung cấp cho bạn tài khoản demo vì mục đích
                         học tập, để đảm bảo những người khác có thể sử dụng
                         chung tài khoản chúng tôi sẽ hạn chế rất nhiều quyền
@@ -229,7 +229,7 @@ const Account = () => {
                     </div>
                     <div className="col-12 col-md-auto">
                       {/* Link */}
-                      <div className="form-group font-size-sm text-muted font-light">
+                      <div className="font-light form-group font-size-sm text-muted">
                         By registering your details, you agree with our Terms
                         &amp; Conditions, and Privacy and Cookie Policy.
                       </div>

@@ -1,40 +1,53 @@
 import { useCart } from "@/hooks/useCart";
 import { removeCartItemAction, updateCartItemAction } from "@/stores/cart";
 import { currency } from "@/utils";
-import { Popconfirm, Popover, Spin } from "antd";
+import { Popconfirm, Spin } from "antd";
 import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
 export const CartItem = ({ productId, product, quantity }) => {
   const dispatch = useDispatch();
-  const inputRef = useRef();
+  // const inputRef = useRef();
   const [_quantity, setQuantity] = useState(quantity);
 
   const { loading } = useCart();
   const _loading = loading[productId] || false;
+  const [openPopconfirm, setOpenPopconfirm] = useState(false);
+  const [openPopconfirmQuantity, setOpenPopconfirmQuantity] = useState(false);
 
   useEffect(() => {
-    if (parseInt(inputRef.current.value) !== quantity) {
-      inputRef.current.value = quantity;
+    if (_quantity !== quantity) {
+      setQuantity(quantity);
     }
   }, [quantity]);
 
   const onDecrement = () => {
-    inputRef.current.value--;
+    // inputRef.current.value--;
+    setQuantity(_quantity - 1);
     dispatch(
       updateCartItemAction({
         productId,
-        quantity: inputRef.current.value,
+        quantity: _quantity - 1,
       })
     );
   };
   const onIncrement = () => {
-    inputRef.current.value++;
+    setQuantity(_quantity + 1);
+    // inputRef.current.value++;
     dispatch(
       updateCartItemAction({
         productId,
-        quantity: inputRef.current.value,
+        quantity: _quantity + 1,
+      })
+    );
+  };
+
+  const onUpdateQuantity = (val) => {
+    dispatch(
+      updateCartItemAction({
+        productId,
+        quantity: val,
       })
     );
   };
@@ -85,7 +98,12 @@ export const CartItem = ({ productId, product, quantity }) => {
               {/* Select */}
               <div className="btn-group btn-quantity">
                 <Popconfirm
-                  onConfirm={onRemoveCartItem}
+                  open={openPopconfirmQuantity}
+                  onOpenChange={(visible) => setOpenPopconfirmQuantity(visible)}
+                  onConfirm={() => {
+                    setOpenPopconfirmQuantity(false);
+                    onRemoveCartItem();
+                  }}
                   disabled={_quantity > 1}
                   placement="bottomRight"
                   okText="Xoá"
@@ -101,9 +119,19 @@ export const CartItem = ({ productId, product, quantity }) => {
                   </button>
                 </Popconfirm>
                 <input
-                  ref={inputRef}
+                  // ref={inputRef}
                   value={_quantity}
-                  onChange={(ev) => setQuantity(parseInt(ev.target.value)) || 1}
+                  onChange={(ev) => setQuantity(ev.target.value)}
+                  onBlur={(ev) => {
+                    let val = parseInt(ev.target.value);
+                    if (!val) {
+                      val = 1;
+                      setQuantity(val);
+                    }
+                    if (val !== quantity) {
+                      onUpdateQuantity(val);
+                    }
+                  }}
                 />
                 <button onClick={onIncrement} className="btn">
                   +
@@ -111,12 +139,17 @@ export const CartItem = ({ productId, product, quantity }) => {
               </div>
               {/* Remove */}
               <Popconfirm
+                open={openPopconfirm}
+                onOpenChange={(visible) => setOpenPopconfirm(visible)}
                 placement="bottomRight"
                 okText="Xoá"
                 showCancel={false}
                 title="Thông báo"
                 description="Bạn có chắc chắn muốn xoá sản phẩm này?"
-                onConfirm={onRemoveCartItem}
+                onConfirm={() => {
+                  setOpenPopconfirm(false);
+                  onRemoveCartItem();
+                }}
               >
                 <a
                   onClick={(ev) => ev.preventDefault()}
