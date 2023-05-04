@@ -4,6 +4,7 @@ import { PATH } from "@/config";
 import MainLayout from "@/layouts/MainLayout";
 import HomePage from "@/pages";
 import Page404 from "@/pages/404";
+import { ViewCart } from "@/pages/gio-hang";
 import ProductPage from "@/pages/san-pham";
 import Account from "@/pages/tai-khoan";
 import ProductDetailPage from "@/pages/[slug]";
@@ -28,6 +29,10 @@ export const routes = [
       {
         element: <ProductDetailPage />,
         path: PATH.ProductDetail,
+      },
+      {
+        element: <ViewCart />,
+        path: PATH.ViewCart,
       },
       {
         element: <PrivateRouter redirect={PATH.Account} />,

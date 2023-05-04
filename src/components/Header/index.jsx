@@ -255,7 +255,7 @@ const Header = () => {
                 <Popover
                   onOpenChange={(visible) => {
                     if (!visible) {
-                      dispatch(cartActions.togglePopover(visible));
+                      dispatch(cartActions.togglePopover(false));
                     }
                   }}
                   trigger={["click"]}
@@ -268,9 +268,15 @@ const Header = () => {
                         </span>
                         Thêm sản phẩm vào giỏ hàng thành công
                       </p>
-                      <Button className="justify-center w-full mt-2 btn-xs">
+                      <Link
+                        onClick={() =>
+                          dispatch(cartActions.togglePopover(false))
+                        }
+                        to={PATH.ViewCart}
+                        className="justify-center w-full mt-2 btn btn-dark btn-xs"
+                      >
                         Xem giỏ hàng và thanh toán
-                      </Button>
+                      </Link>
                     </>
                   }
                   placement="bottomRight"

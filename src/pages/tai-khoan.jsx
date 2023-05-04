@@ -15,8 +15,8 @@ import { userService } from "@/services/user";
 import { message } from "antd";
 import { useAuth } from "@/hooks/useAuth";
 import { useDispatch } from "react-redux";
-import { loginAction, loginByCodeAction } from "@/stores/auth";
 import { useSearch } from "@/hooks/useSearch";
+import { loginAction, loginByCodeAction } from "@/stores/auth";
 
 const Account = () => {
   const dispatch = useDispatch();

@@ -11,4 +11,7 @@ export const cartService = {
   removeItem(productId) {
     return http.delete(`${CART_API}/${productId}`);
   },
+  preCheckout(data) {
+    return http.post(`${CART_API}/pre-checkout`, data);
+  },
 };

@@ -1,12 +1,17 @@
 import { useCart } from "@/hooks/useCart";
-import { removeCartItemAction, updateCartItemAction } from "@/stores/cart";
+import {
+  removeCartItemAction,
+  toggleCheckOutItemAction,
+  updateCartItemAction,
+} from "@/stores/cart";
 import { currency } from "@/utils";
 import { Popconfirm, Spin } from "antd";
 import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { Checkbox } from "../Checkout";
 
-export const CartItem = ({ productId, product, quantity }) => {
+export const CartItem = ({ allowSelect, productId, product, quantity }) => {
   const dispatch = useDispatch();
   // const inputRef = useRef();
   const [_quantity, setQuantity] = useState(quantity);
@@ -22,43 +27,62 @@ export const CartItem = ({ productId, product, quantity }) => {
     }
   }, [quantity]);
 
-  const onDecrement = () => {
-    // inputRef.current.value--;
-    setQuantity(_quantity - 1);
-    dispatch(
-      updateCartItemAction({
-        productId,
-        quantity: _quantity - 1,
-      })
-    );
+  const onChangeQuantityCurry = (val) => () => {
+    if (val === 0) {
+      dispatch(removeCartItemAction(productId));
+    } else {
+      setQuantity(val);
+      dispatch(
+        updateCartItemAction({
+          productId,
+          quantity: val,
+        })
+      );
+    }
   };
-  const onIncrement = () => {
-    setQuantity(_quantity + 1);
-    // inputRef.current.value++;
-    dispatch(
-      updateCartItemAction({
-        productId,
-        quantity: _quantity + 1,
-      })
-    );
-  };
+  // const onDecrement = () => {
+  //   // inputRef.current.value--;
+  //   setQuantity(_quantity - 1);
+  //   dispatch(
+  //     updateCartItemAction({
+  //       productId,
+  //       quantity: _quantity - 1,
+  //     })
+  //   );
+  // };
+  // const onIncrement = () => {
+  //   setQuantity(_quantity + 1);
+  //   // inputRef.current.value++;
+  //   dispatch(
+  //     updateCartItemAction({
+  //       productId,
+  //       quantity: _quantity + 1,
+  //     })
+  //   );
+  // };
 
-  const onUpdateQuantity = (val) => {
-    dispatch(
-      updateCartItemAction({
-        productId,
-        quantity: val,
-      })
-    );
-  };
+  // const onUpdateQuantity = (val) => {
+  //   dispatch(
+  //     updateCartItemAction({
+  //       productId,
+  //       quantity: val,
+  //     })
+  //   );
+  // };
 
-  const onRemoveCartItem = () => {
-    dispatch(removeCartItemAction(productId));
+  // const onRemoveCartItem = () => {
+  //   dispatch(removeCartItemAction(productId));
+  // };
+
+  const onSelectCartItem = (checked) => {
+    dispatch(toggleCheckOutItemAction({ checked, productId }));
   };
   return (
     <Spin spinning={_loading}>
       <li className="list-group-item">
         <div className="row align-items-center">
+          {allowSelect && <Checkbox onChange={onSelectCartItem} />}
+
           <div className="w-[120px]">
             {/* Image */}
             <a href="./product.html">
@@ -102,7 +126,7 @@ export const CartItem = ({ productId, product, quantity }) => {
                   onOpenChange={(visible) => setOpenPopconfirmQuantity(visible)}
                   onConfirm={() => {
                     setOpenPopconfirmQuantity(false);
-                    onRemoveCartItem();
+                    onChangeQuantityCurry(0)();
                   }}
                   disabled={_quantity > 1}
                   placement="bottomRight"
@@ -112,7 +136,11 @@ export const CartItem = ({ productId, product, quantity }) => {
                   description="Bạn có chắc chắn muốn xoá sản phẩm này?"
                 >
                   <button
-                    onClick={_quantity > 1 ? onDecrement : undefined}
+                    onClick={
+                      _quantity > 1
+                        ? onChangeQuantityCurry(_quantity - 1)
+                        : undefined
+                    }
                     className="btn"
                   >
                     -
@@ -133,7 +161,10 @@ export const CartItem = ({ productId, product, quantity }) => {
                     }
                   }}
                 />
-                <button onClick={onIncrement} className="btn">
+                <button
+                  onClick={onChangeQuantityCurry(_quantity + 1)}
+                  className="btn"
+                >
                   +
                 </button>
               </div>
@@ -148,7 +179,7 @@ export const CartItem = ({ productId, product, quantity }) => {
                 description="Bạn có chắc chắn muốn xoá sản phẩm này?"
                 onConfirm={() => {
                   setOpenPopconfirm(false);
-                  onRemoveCartItem();
+                  onChangeQuantityCurry(0)();
                 }}
               >
                 <a
