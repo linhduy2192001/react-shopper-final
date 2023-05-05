@@ -87,11 +87,10 @@ export function* setCartSaga(action) {
 export function* fetchSelectCartItem(action) {
   try {
     let {
-      cart: {
-        preCheckoutData: { listItems },
-      },
+      cart: { preCheckoutData },
     } = yield select();
 
+    let { listItems } = preCheckoutData;
     listItems = [...listItems];
     // const { preCheckoutData } = cart;
     // const { listItems } = preCheckoutData;
@@ -106,6 +105,7 @@ export function* fetchSelectCartItem(action) {
 
     yield put(
       cartActions.setPreCheckoutData({
+        ...preCheckoutData,
         listItems,
       })
     );
@@ -133,4 +133,23 @@ export function* fetchPreCheckout(action) {
   } catch (err) {
     handleError(err);
   }
+}
+
+export function* fetchAddPromotion(action) {
+  try {
+    yield put(cartActions.togglePromotionLoading(true));
+    yield call(cartService.getPromotion, action.payload.data);
+    yield put(cartActions.togglePromotionCode(action.payload.data));
+    action.payload?.onSuccess?.();
+  } catch (err) {
+    // handleError(err);
+    action.payload?.onError?.(err);
+  } finally {
+    yield put(cartActions.togglePromotionLoading(false));
+  }
+}
+
+export function* removePromotion(action) {
+  yield put(cartActions.togglePromotionCode());
+  action?.payload?.onSuccess?.();
 }

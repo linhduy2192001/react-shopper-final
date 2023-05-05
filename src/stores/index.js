@@ -15,7 +15,8 @@ export const store = configureStore({
   reducer: { auth: authReducer, cart: cartReducer },
 
   devTools: ENV === "development",
-  middleware: (getMiddleware) => getMiddleware().concat(sagaMiddleware),
+  middleware: (getMiddleware) =>
+    getMiddleware({ serializableCheck: false }).concat(sagaMiddleware),
 });
 
 sagaMiddleware.run(rootSaga);

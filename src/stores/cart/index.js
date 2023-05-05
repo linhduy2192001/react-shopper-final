@@ -5,11 +5,13 @@ import { loginSuccessAction, logoutAction } from "../auth";
 
 import {
   clearCart,
+  fetchAddPromotion,
   fetchCart,
   fetchCartItem,
   fetchPreCheckout,
   fetchRemoveItem,
   fetchSelectCartItem,
+  removePromotion,
   setCartSaga,
 } from "./saga";
 
@@ -60,10 +62,12 @@ export const {
       cart: getCart(),
       openCartOver: false,
       preCheckoutData: {
+        promotionCode: [],
         listItems: [],
       },
-      preCheckoutResponse: null,
+      preCheckoutResponse: {},
       preCheckoutLoading: false,
+      promotionLoading: false,
       loading: {},
     };
   },
@@ -79,6 +83,16 @@ export const {
     },
     togglePreCheckoutLoading(state, action) {
       state.preCheckoutLoading = action.payload;
+    },
+    togglePromotionLoading(state, action) {
+      state.promotionLoading = action.payload;
+    },
+    togglePromotionCode(state, action) {
+      if (action.payload) {
+        state.preCheckoutData.promotionCode = [action.payload];
+      } else {
+        state.preCheckoutData.promotionCode = [];
+      }
     },
     setPreCheckoutData(state, action) {
       state.preCheckoutData = action.payload;
@@ -96,6 +110,8 @@ export const toggleCheckOutItemAction = createAction(`${name}/selectCartItem`);
 export const updateItemQuantitySuccessAction = createAction(
   `${name}/updateItemQuantitySuccess`
 );
+export const addPromotionAction = createAction(`${name}/addPromotion`);
+export const removePromotionAction = createAction(`${name}/removePromotion`);
 
 export function* cartSaga() {
   //   yield takeLatest("cart/getCart/pending", getCart);
@@ -106,7 +122,14 @@ export function* cartSaga() {
   yield takeLatest(cartActions.setCart, setCartSaga);
   yield takeLatest(toggleCheckOutItemAction, fetchSelectCartItem);
   yield takeLatest(
-    [cartActions.setPreCheckoutData, updateItemQuantitySuccessAction],
+    [
+      cartActions.setPreCheckoutData,
+      updateItemQuantitySuccessAction,
+      cartActions.togglePromotionCode,
+    ],
     fetchPreCheckout
   );
+  //promotion
+  yield takeLatest(addPromotionAction, fetchAddPromotion);
+  yield takeLatest(removePromotionAction, removePromotion);
 }

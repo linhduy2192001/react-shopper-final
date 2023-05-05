@@ -14,4 +14,7 @@ export const cartService = {
   preCheckout(data) {
     return http.post(`${CART_API}/pre-checkout`, data);
   },
+  getPromotion(code) {
+    return http.get(`${CART_API}/promotion/${code}`);
+  },
 };
